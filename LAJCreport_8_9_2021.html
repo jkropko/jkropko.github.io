@@ -14261,7 +14261,15 @@ a.anchor-link {
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <h1 id="Report-on-Expungement-Outcomes-in-the-Virginia-Court-Data">Report on Expungement Outcomes in the Virginia Court Data<a class="anchor-link" href="#Report-on-Expungement-Outcomes-in-the-Virginia-Court-Data">&#182;</a></h1><p><strong>Code for Charlottesville</strong></p>
 <p><em>Last updated: 8/9/2021</em></p>
-<h2 id="Introduction">Introduction<a class="anchor-link" href="#Introduction">&#182;</a></h2><p>Previously, we developed a program to auto-encode every record in the Virginia court data by expungability under the new law: either automatic, petition, automatic or petition pending a mandatory waiting period, or not eligible for expungement. We also automatically coded the reasons for each expungement decision, and phrased the reasons in the language of the new law. We then constructed a loop that applied these auto-encoders to each individuals' records in the Virginia court data. We saved the data in a Postgres database on our Oracle cloud virtual computers.</p>
+<h3 id="Table-of-contents">Table of contents<a class="anchor-link" href="#Table-of-contents">&#182;</a></h3><ol>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#loading">Loading the data from our Postgres DB</a></li>
+<li><a href="#q1">How many records qualify as automatic, automatic (pending), petition, petition (pending), or not expungable, in every by year in the data?</a></li>
+<li><a href="#q2">How do these counts break down by race?</a></li>
+<li><a href="#q3">What are the most frequent reasons for each expungability outcome?</a></li>
+<li><a href="#q4">How do these reasons differ by race?</a></li>
+</ol>
+<h2 id="Introduction-">Introduction <a name="introduction" /><a class="anchor-link" href="#Introduction-">&#182;</a></h2><p>Previously, we developed a program to auto-encode every record in the Virginia court data by expungability under the new law: either automatic, petition, automatic or petition pending a mandatory waiting period, or not eligible for expungement. We also automatically coded the reasons for each expungement decision, and phrased the reasons in the language of the new law. We then constructed a loop that applied these auto-encoders to each individuals' records in the Virginia court data. We saved the data in a Postgres database on our Oracle cloud virtual computers.</p>
 <p>In this document, we load the data and summarize it in ways that provide answers to the following questions:</p>
 <ol>
 <li><p>How many records qualify as automatic, automatic (pending), petition, petition (pending), or not expungeable, in every by year in the data.</p>
@@ -14269,6 +14277,8 @@ a.anchor-link {
 <li><p>How do these counts break down by race?</p>
 </li>
 <li><p>What are the most frequent reasons for each expungability outcome?</p>
+</li>
+<li><p>How do these reasons differ by race?</p>
 </li>
 </ol>
 <p>We begin by loading the following Python packages:</p>
@@ -14289,6 +14299,7 @@ a.anchor-link {
 <span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
 <span class="kn">import</span> <span class="nn">matplotlib.ticker</span> <span class="k">as</span> <span class="nn">ticker</span>
 <span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
+<span class="kn">import</span> <span class="nn">sidetable</span>
 </pre></div>
 
      </div>
@@ -14299,7 +14310,7 @@ a.anchor-link {
 </div>
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h2 id="Loading-the-data-from-our-Postgres-DB">Loading the data from our Postgres DB<a class="anchor-link" href="#Loading-the-data-from-our-Postgres-DB">&#182;</a></h2><p>First we create a connection to the database:</p>
+<h2 id="Loading-the-data-from-our-Postgres-DB-">Loading the data from our Postgres DB <a name="loading" /><a class="anchor-link" href="#Loading-the-data-from-our-Postgres-DB-">&#182;</a></h2><p>First we create a connection to the database:</p>
 
 </div>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
@@ -14340,7 +14351,7 @@ a.anchor-link {
 
 
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
-<pre>&lt;cursor object at 0x7f09d898a650; closed: 0&gt;
+<pre>&lt;cursor object at 0x7f7d0a096750; closed: 0&gt;
 </pre>
 </div>
 </div>
@@ -14618,7 +14629,7 @@ memory usage: 887.9+ MB
 </div>
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h2 id="1.-How-many-records-qualify-as-automatic,-automatic-(pending),-petition,-petition-(pending),-or-not-expungable,-in-every-by-year-in-the-data.">1. How many records qualify as automatic, automatic (pending), petition, petition (pending), or not expungable, in every by year in the data.<a class="anchor-link" href="#1.-How-many-records-qualify-as-automatic,-automatic-(pending),-petition,-petition-(pending),-or-not-expungable,-in-every-by-year-in-the-data.">&#182;</a></h2>
+<h2 id="How-many-records-qualify-as-automatic,-automatic-(pending),-petition,-petition-(pending),-or-not-expungable,-in-every-by-year-in-the-data?-">How many records qualify as automatic, automatic (pending), petition, petition (pending), or not expungable, in every by year in the data? <a name="q1" /><a class="anchor-link" href="#How-many-records-qualify-as-automatic,-automatic-(pending),-petition,-petition-(pending),-or-not-expungable,-in-every-by-year-in-the-data?-">&#182;</a></h2>
 </div>
 </div>
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
@@ -15348,6 +15359,1174 @@ See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stab
 
 </div>
 
+</div>
+
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="How-do-these-counts-break-down-by-race?-">How do these counts break down by race? <a name="q2" /><a class="anchor-link" href="#How-do-these-counts-break-down-by-race?-">&#182;</a></h2><p>Race is coded in the data, but in an inconsistent way:</p>
+
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[12]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">courtdata</span><span class="o">.</span><span class="n">stb</span><span class="o">.</span><span class="n">freq</span><span class="p">([</span><span class="s1">&#39;Race&#39;</span><span class="p">])</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+<div class="jp-Cell-outputWrapper">
+
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+
+<div class="jp-OutputArea-child">
+
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[12]:</div>
+
+
+
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Race</th>
+      <th>count</th>
+      <th>percent</th>
+      <th>cumulative_count</th>
+      <th>cumulative_percent</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>White Caucasian(Non-Hispanic)</td>
+      <td>3221745</td>
+      <td>38.754869</td>
+      <td>3221745</td>
+      <td>38.754869</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Black(Non-Hispanic)</td>
+      <td>2291063</td>
+      <td>27.559552</td>
+      <td>5512808</td>
+      <td>66.314421</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>White Caucasian (Non-Hispanic)</td>
+      <td>1174202</td>
+      <td>14.124658</td>
+      <td>6687010</td>
+      <td>80.439079</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Black (Non-Hispanic)</td>
+      <td>922448</td>
+      <td>11.096270</td>
+      <td>7609458</td>
+      <td>91.535348</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Hispanic</td>
+      <td>264701</td>
+      <td>3.184129</td>
+      <td>7874159</td>
+      <td>94.719478</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>Other(Includes Not Applicable.. Unknown)</td>
+      <td>99609</td>
+      <td>1.198212</td>
+      <td>7973768</td>
+      <td>95.917690</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>White</td>
+      <td>93421</td>
+      <td>1.123776</td>
+      <td>8067189</td>
+      <td>97.041465</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>Asian Or Pacific Islander</td>
+      <td>80618</td>
+      <td>0.969766</td>
+      <td>8147807</td>
+      <td>98.011232</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>Black</td>
+      <td>65727</td>
+      <td>0.790640</td>
+      <td>8213534</td>
+      <td>98.801872</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>NA</td>
+      <td>50056</td>
+      <td>0.602131</td>
+      <td>8263590</td>
+      <td>99.404003</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>Unknown (Includes Not Applicable.. Unknown)</td>
+      <td>22741</td>
+      <td>0.273555</td>
+      <td>8286331</td>
+      <td>99.677559</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>Other (Includes Not Applicable.. Unknown)</td>
+      <td>16649</td>
+      <td>0.200273</td>
+      <td>8302980</td>
+      <td>99.877832</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>American Indian</td>
+      <td>8180</td>
+      <td>0.098398</td>
+      <td>8311160</td>
+      <td>99.976230</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>Unknown</td>
+      <td>1441</td>
+      <td>0.017334</td>
+      <td>8312601</td>
+      <td>99.993564</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>Asian or Pacific Islander</td>
+      <td>445</td>
+      <td>0.005353</td>
+      <td>8313046</td>
+      <td>99.998917</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>American Indian or Alaskan Native</td>
+      <td>59</td>
+      <td>0.000710</td>
+      <td>8313105</td>
+      <td>99.999627</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>American Indian Or Alaskan Native</td>
+      <td>31</td>
+      <td>0.000373</td>
+      <td>8313136</td>
+      <td>100.000000</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p>We have to combine and collapse these categories to get a clear picture of how expungability outcomes depend on race:</p>
+
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[13]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">replace_map</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Black(Non-Hispanic)&#39;</span><span class="p">:</span><span class="s1">&#39;Black (Non-Hispanic)&#39;</span><span class="p">,</span> 
+               <span class="s1">&#39;White Caucasian(Non-Hispanic)&#39;</span><span class="p">:</span><span class="s1">&#39;White (Non-Hispanic)&#39;</span><span class="p">,</span> 
+               <span class="s1">&#39;Other(Includes Not Applicable.. Unknown)&#39;</span><span class="p">:</span><span class="s1">&#39;Other&#39;</span><span class="p">,</span>
+               <span class="s1">&#39;White Caucasian (Non-Hispanic)&#39;</span><span class="p">:</span><span class="s1">&#39;White (Non-Hispanic)&#39;</span><span class="p">,</span>
+               <span class="s1">&#39;Unknown (Includes Not Applicable.. Unknown)&#39;</span><span class="p">:</span><span class="s1">&#39;Other&#39;</span><span class="p">,</span> 
+               <span class="s1">&#39;NA&#39;</span><span class="p">:</span><span class="s1">&#39;Other&#39;</span><span class="p">,</span>
+               <span class="s1">&#39;Asian Or Pacific Islander&#39;</span><span class="p">:</span><span class="s1">&#39;Asian or Pacific Islander&#39;</span><span class="p">,</span> 
+               <span class="s1">&#39;Black (Non-Hispanic)&#39;</span><span class="p">:</span><span class="s1">&#39;Black (Non-Hispanic)&#39;</span><span class="p">,</span> 
+               <span class="s1">&#39;White&#39;</span><span class="p">:</span><span class="s1">&#39;White (Non-Hispanic)&#39;</span><span class="p">,</span>
+               <span class="s1">&#39;American Indian&#39;</span><span class="p">:</span><span class="s1">&#39;American Indian or Alaskan Native&#39;</span><span class="p">,</span> 
+               <span class="s1">&#39;Unknown&#39;</span><span class="p">:</span><span class="s1">&#39;Other&#39;</span><span class="p">,</span>
+               <span class="s1">&#39;Other (Includes Not Applicable.. Unknown)&#39;</span><span class="p">:</span><span class="s1">&#39;Other&#39;</span><span class="p">,</span> 
+               <span class="s1">&#39;Black&#39;</span><span class="p">:</span><span class="s1">&#39;Black (Non-Hispanic)&#39;</span><span class="p">,</span>
+               <span class="s1">&#39;American Indian or Alaskan Native&#39;</span><span class="p">:</span><span class="s1">&#39;American Indian or Alaskan Native&#39;</span><span class="p">,</span>
+               <span class="s1">&#39;American Indian Or Alaskan Native&#39;</span><span class="p">:</span><span class="s1">&#39;American Indian or Alaskan Native&#39;</span><span class="p">,</span> 
+               <span class="s1">&#39;Asian or Pacific Islander&#39;</span><span class="p">:</span><span class="s1">&#39;Asian or Pacific Islander&#39;</span><span class="p">}</span>
+<span class="n">courtdata</span><span class="o">.</span><span class="n">Race</span> <span class="o">=</span> <span class="n">courtdata</span><span class="o">.</span><span class="n">Race</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">replace_map</span><span class="p">)</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[14]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">courtdata</span><span class="o">.</span><span class="n">stb</span><span class="o">.</span><span class="n">freq</span><span class="p">([</span><span class="s1">&#39;Race&#39;</span><span class="p">])</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+<div class="jp-Cell-outputWrapper">
+
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+
+<div class="jp-OutputArea-child">
+
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[14]:</div>
+
+
+
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Race</th>
+      <th>count</th>
+      <th>percent</th>
+      <th>cumulative_count</th>
+      <th>cumulative_percent</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>White (Non-Hispanic)</td>
+      <td>4489368</td>
+      <td>54.003303</td>
+      <td>4489368</td>
+      <td>54.003303</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Black (Non-Hispanic)</td>
+      <td>3279238</td>
+      <td>39.446462</td>
+      <td>7768606</td>
+      <td>93.449764</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Hispanic</td>
+      <td>264701</td>
+      <td>3.184129</td>
+      <td>8033307</td>
+      <td>96.633894</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Other</td>
+      <td>190496</td>
+      <td>2.291506</td>
+      <td>8223803</td>
+      <td>98.925400</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Asian or Pacific Islander</td>
+      <td>81063</td>
+      <td>0.975119</td>
+      <td>8304866</td>
+      <td>99.900519</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>American Indian or Alaskan Native</td>
+      <td>8270</td>
+      <td>0.099481</td>
+      <td>8313136</td>
+      <td>100.000000</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p>We can now generate a cross-tabulation of race and expungability outcome. The following table contains row percents: of all records from a person of the given race, what percent falls within each expungability outcome?</p>
+
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[15]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">rowtable</span> <span class="o">=</span> <span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">crosstab</span><span class="p">(</span><span class="n">courtdata</span><span class="o">.</span><span class="n">Race</span><span class="p">,</span> <span class="n">courtdata</span><span class="o">.</span><span class="n">expungable</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="s1">&#39;index&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+<span class="n">rowtable</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+<div class="jp-Cell-outputWrapper">
+
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+
+<div class="jp-OutputArea-child">
+
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[15]:</div>
+
+
+
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>expungable</th>
+      <th>Race</th>
+      <th>Automatic</th>
+      <th>Automatic (pending)</th>
+      <th>Not eligible</th>
+      <th>Petition</th>
+      <th>Petition (pending)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>American Indian or Alaskan Native</td>
+      <td>11.06</td>
+      <td>1.38</td>
+      <td>15.95</td>
+      <td>30.83</td>
+      <td>40.77</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Asian or Pacific Islander</td>
+      <td>14.27</td>
+      <td>2.32</td>
+      <td>19.05</td>
+      <td>29.41</td>
+      <td>34.95</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Black (Non-Hispanic)</td>
+      <td>5.30</td>
+      <td>3.00</td>
+      <td>43.38</td>
+      <td>18.74</td>
+      <td>29.58</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Hispanic</td>
+      <td>6.12</td>
+      <td>1.20</td>
+      <td>8.77</td>
+      <td>33.11</td>
+      <td>50.79</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Other</td>
+      <td>10.79</td>
+      <td>1.83</td>
+      <td>13.02</td>
+      <td>26.37</td>
+      <td>48.00</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>White (Non-Hispanic)</td>
+      <td>8.50</td>
+      <td>2.92</td>
+      <td>35.99</td>
+      <td>22.07</td>
+      <td>30.52</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p>We can plot these percents:</p>
+
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[16]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">barplot</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">melt</span><span class="p">(</span><span class="n">rowtable</span><span class="p">,</span>
+                  <span class="n">id_vars</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Race&#39;</span><span class="p">],</span>
+                  <span class="n">value_vars</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Automatic&#39;</span><span class="p">,</span> <span class="s1">&#39;Automatic (pending)&#39;</span><span class="p">,</span>
+                                <span class="s1">&#39;Not eligible&#39;</span><span class="p">,</span> <span class="s1">&#39;Petition&#39;</span><span class="p">,</span> <span class="s1">&#39;Petition (pending)&#39;</span><span class="p">])</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">18</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">barplot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;Race&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s1">&#39;expungable&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">barplot</span><span class="p">)</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+<div class="jp-Cell-outputWrapper">
+
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+
+<div class="jp-OutputArea-child">
+
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[16]:</div>
+
+
+
+
+<div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain">
+<pre>&lt;AxesSubplot:xlabel=&#39;Race&#39;, ylabel=&#39;value&#39;&gt;</pre>
+</div>
+
+</div>
+
+<div class="jp-OutputArea-child">
+
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+
+
+
+
+<div class="jp-RenderedImage jp-OutputArea-output ">
+<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABBwAAAFzCAYAAACdARotAAAAOXRFWHRTb2Z0d2FyZQBNYXRwbG90bGliIHZlcnNpb24zLjQuMiwgaHR0cHM6Ly9tYXRwbG90bGliLm9yZy8rg+JYAAAACXBIWXMAAAsTAAALEwEAmpwYAABCM0lEQVR4nO3de5xVZb348c+XS0JCqAkeTRPseEMGBhgMURHQo5aImpLmFU3xRpgpab+jRnpKTuqxg56TZSbmUaQDXkjrpCJoIAkDjqB4LzKTFEkREJTL8/tjrxlnYGYYcO2ZAT7v12tes67P811rr73W3t/9rGdFSglJkiRJkqQ8tWjqACRJkiRJ0tbHhIMkSZIkScqdCQdJkiRJkpQ7Ew6SJEmSJCl3JhwkSZIkSVLuTDhIkiRJkqTctWrqABpi5513Tp07d27qMCRJkiRJUjVz5sx5N6XUsbZ5W0TCoXPnzpSXlzd1GJIkSZIkqZqI+Etd87ylQpIkSZIk5c6EgyRJkiRJyp0JB0mSJEmSlLstog8HSZIkSVLxrF69mjfffJNVq1Y1dShqptq0acPuu+9O69atG7yOCQdJkiRJ2sa9+eabtG/fns6dOxMRTR2OmpmUEkuWLOHNN9+kS5cuDV7PWyokSZIkaRu3atUqPv/5z5tsUK0igs9//vOb3ALGhIMkSZIkyWSD6rU5x4cJB0mSJEmScjJgwADKy8s3mD5u3DhGjBjRBBE1HRMOkiRJkiQpdyYcJEmSJEnN3v/8z/9w4IEHUlpayvnnn88zzzxD9+7dWbVqFStWrOCAAw7g+eefZ9q0afTv358TTjiBrl27csEFF7Bu3ToA2rVrV1XexIkTGTZsGADDhg1j5MiR9OvXj7322ouJEycCsG7dOi666CIOOOAABg8ezFe/+tWqeddeey19+vShW7duDB8+nJRSjVj79etHt27dmDVr1gbbsnjxYk488UT69OlDnz59mDFjRrF2W5My4SBJkiRJatZefPFFJkyYwIwZM6ioqKBly5a8/PLLDBkyhKuuuorvfve7nH766XTr1g2AWbNmcdNNNzF//nxef/117r///o3WsWjRIqZPn87DDz/MlVdeCcD999/PwoULmT9/Pr/4xS+YOXNm1fIjRoxg9uzZPP/886xcuZKHH364at6KFSt4+umn+e///m/OOeecDeq65JJLuPTSS5k9ezaTJk3i3HPP/bS7qFnysZiSJEmSpGZtypQpzJkzhz59+gCwcuVKOnXqxDXXXEOfPn1o06YNY8eOrVr+wAMPZK+99gLgG9/4BtOnT+ekk06qt47jjz+eFi1a0LVrV95++20Apk+fztChQ2nRogX/9E//xMCBA6uWnzp1Kj/+8Y/58MMP+cc//sEBBxzAscceW1UnQP/+/fnggw94//33a9T1+OOPs2DBgqrxDz74gGXLltG+ffvN3EPNkwkHSZIkSVKzllLirLPO4vrrr68x/e9//zvLly9n9erVrFq1iu233x7Y8IkKlePVp6//iMftttuuRn3V/69v1apVXHTRRZSXl7PHHnswevToGuXVVX+ldevWMXPmTNq2bVv3Rm8FTDhIkiSpaG697DeNVteIm45ttLokNa7DDz+c4447jksvvZROnTrxj3/8g2XLlvGtb32L6667jj//+c9cccUV3HrrrUDhloo///nP7LnnnkyYMIHhw4cDsMsuu/Diiy+y77778sADD2y0RcEhhxzCXXfdxVlnncXixYuZNm0ap556alVyYeedd2b58uVMnDixRguKCRMmMHDgQKZPn06HDh3o0KFDjXKPPPJIbr31VkaNGgVARUUFpaWlee2uZsOEgyRJkiSpWevatSv/9m//xpFHHsm6deto3bo1xx13HK1ateLUU09l7dq19OvXjyeeeIIWLVpw0EEHceWVVzJ//vyqDiQBxowZw+DBg9ljjz3o1q0by5cvr7feE088kSlTptCtWzf22WcfvvzlL9OhQwd22GEHzjvvPEpKSujcuXPVrR6VdtxxR/r168cHH3zAL3/5yw3KHTt2LBdffDHdu3dnzZo19O/fn9tuuy2/HdZMRF1NRHIpPGIhsAxYC6xJKZVFxE7ABKAzsBD4ekrpvfrKKSsrS7U9x1SSJEnNmy0cpC3Diy++yP7779/UYeRi2rRp3HjjjTU6cfw0li9fTrt27ViyZAkHHnggM2bM4J/+6Z9yKXtLU9txEhFzUkpltS3fGC0cBqaU3q02fiUwJaU0JiKuzMavaIQ4JEmSJEnaJIMHD+b999/n448/5uqrr95mkw2boyluqTgOGJAN3wVMw4SDJEmSJCkHAwYMYMCAAbmVN23atNzK2ta0KHL5CXg0IuZExPBs2i4ppUUA2f9Ota0YEcMjojwiyhcvXlzk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GgA6derEY489xty5c5kwYULVbRNjxozh0EMPpaKigksvvbRGDNdddx0dOnRg/vz5zJs3j0GDBm0Q54wZM+jdu3fV+IoVK+jVqxdz587lsMMO4wc/+AEAw4cP55ZbbmHOnDnceOONXHTRRVXrLFq0iOnTp/Pwww9z5ZVXAoXbT15++WXmz5/P7bffXpUgWd+KFSvo27cvzz33HP379+f2228H4JJLLuGSSy5h9uzZ7LbbbjXWKSsr4w9/+EO9+78hTDhIkiRJkprc+PHjOeWUUwA45ZRTGD9+/CatP3v2bAYMGEDHjh1p1aoVp512Gk899RQAn/nMZ6r6JSgpKeGwww6jdevWlJSUsHDhQgBWr17NeeedR0lJCUOHDm1QHwiPP/44F198cdX4jjvuuMEyixYtomPHjlXjLVq04OSTTwbg9NNPZ/r06Sxfvpynn36aoUOHUlpayvnnn8+iRYuq1jn++ONp0aIFXbt2rWqh8NRTT/GNb3yDli1bsttuu9Wa7Kjc9soWGb17967a3pkzZzJ06FCAqttFKnXq1Im33npro9u/MfbhIEmSJElqUkuWLOGJJ57g+eefJyJYu3YtEcGPf/xjWrVqxbp166qWXbVqVa1lpJTqLL9169ZEBFD4wr/ddttVDa9ZswaAm2++mV122YXnnnuOdevW0aZNm43GnVKqKrcubdu2rTNmgIhg3bp17LDDDlRUVNS6TGW8lXVWX3djqm97y5Ytq7a3PqtWraJt27YbXW5jbOEgSZIkSWpSEydO5Mwzz+Qvf/kLCxcu5K9//StdunRh+vTp7LnnnixYsICPPvqIpUuXMmXKlKr12rdvz7JlywD48pe/zJNPPsm7777L2rVrGT9+PIcddliDY1i6dCm77rorLVq04O6772bt2rUb1LG+I488kltvvbVq/L333ttgmf3335/XXnutanzdunVV/TDce++9HHLIIXzuc5+jS5cu/O///i9QSCo899xz9cbbv39/7rvvPtauXcuiRYuYOnVqg7cVoG/fvlV9TlTvMwPglVdeoVu3bptUXm1MOEiSJEmSmtT48eM54YQTakw78cQTuffee9ljjz34+te/Tvfu3TnttNPo2bNn1TLDhw/nK1/5CgMHDmTXXXfl+uuvZ+DAgfTo0YNevXrV6KxxYy666CLuuusu+vbtyyuvvML2228PQPfu3WnVqhU9evTg5ptvrrHOVVddxXvvvUe3bt3o0aNHrV/6jznmGKZNm1Y1vv322/PCCy/Qu3dvnnjiiao+JO655x7uuOMOevTowQEHHMBDDz1Ub7wnnHACe++9NyUlJVx44YWblFyBwhM+/uM//oMDDzyQRYsW0aFDh6p5U6dO5Zhjjtmk8moT9TU7aS7KyspSZQ+bkiRJ2nLcetlvGq2uETcd22h1acvnsVnTiy++yP7779/UYWyVVq5cycCBA5kxYwYtW7akXbt2LF++vKnD4sMPP6Rt27ZEBPfddx/jx4+vSnL079+fhx56aIM+KWo7TiJiTkqp1ueE2oeDJEmSJElF0rZtW37wgx/wt7/9jS9+8YtNHU6VOXPmMGLECFJK7LDDDvzyl78EYPHixXznO9+ptQPMTWXCQZIkSZKkIjrqqKOqhptD6waAQw89tNZ+Ijp27Mjxxx+fSx324SBJkiRJknJnwkGSJEmSJOXOhIMkSZIkScqdCQdJkiRJkpQ7Ew6SJEmSpCYXEVx22WVV4zfeeCOjR4+ud50HH3yQBQsWbFI948aNY8SIEQDcdttt/OpXv6p3+fLyckaOHAnA6NGjufHGGzdYZuHChXTr1m2T4tgW+JQKSZIkSVINB99ycK7lzfjWjI0us91223H//ffzve99j5133rlB5T744IMMHjyYrl27blZcF1xwwUaXKSsro6ysbLPK39bZwkGSJEmS1ORatWrF8OHDufnmmzeY95e//IXDDz+c7t27c/jhh/PGG2/w9NNPM3nyZEaNGkVpaSmvv/56jXUWL17MiSeeSJ8+fejTpw8zZmyY9KjeYmH27Nl0796dgw46iFGjRlW1WJg2bRqDBw+uWue5555j0KBB7L333tx+++0blLl27VpGjRpFnz596N69Oz/72c8+1X7ZkplwkCRJkiQ1CxdffDH33HMPS5curTF9xIgRnHnmmcybN4/TTjuNkSNH0q9fP4YMGcINN9xARUUFX/rSl2qsc8kll3DppZcye/ZsJk2axLnnnltv3WeffTa33XYbM2fOpGXLlnUuN2/ePB555BFmzpzJtddey1tvvVVj/h133EGHDh2YPXs2s2fP5vbbb+fPf/7zJu6JrYO3VEiSJEmSmoXPfe5znHnmmYwdO5a2bdtWTZ85cyb3338/AGeccQbf/e53N1rW448/XqN/hw8++IBly5bVuuz777/PsmXL6NevHwCnnnoqDz/8cK3LHnfccbRt25a2bdsycOBAZs2aRWlpadX8Rx99lHnz5jFx4kQAli5dyquvvkqXLl02GvPWxoSDJEmSJKnZ+Pa3v02vXr04++yz61wmIjZazrp165g5c2aNxEVdUkoNjm/9utcfTylxyy23cNRRRzW4zK2VCQdJ0jYl706w6tOQDrIkSVJNO+20E1//+te54447OOeccwDo168f9913H2eccQb33HMPhxxyCADt27evs9XCkUceya233sqoUaMAqKioqNESobodd9yR9u3b88c//pG+ffty33331RnfQw89xPe+9z1WrFjBtGnTGDNmDB9//HHV/KOOOoqf/vSnDBo0iNatW/PKK6/whS98ge23335zdscWzT4cJEmSJEnNymWXXca7775bNT527FjuvPNOunfvzt13381//ud/AnDKKadwww030LNnzw06jRw7dizl5eV0796drl27ctttt9Vb5x133MHw4cM56KCDSCnRoUOHWpc78MADOeaYY+jbty9XX301u+22W4355557Ll27dqVXr15069aN888/nzVr1mzObtjixaY0HWkqZWVlqby8vKnDkCRtBWzhIDWuWy/7TaPVNeKmYxutLm35PDZrevHFF9l///2bOowmtXz5ctq1awfAmDFjWLRoUVViQwW1HScRMSelVOtzQ72lQpIkSZK0zXvkkUe4/vrrWbNmDXvuuSfjxo1r6pC2eCYcJEmSJEnbvJNPPpmTTz65qcPYqtiHgyRJkiRJyp0JB0mSJEmSlDsTDpIkSZIkKXcmHCRJkiRJUu5MOEiSJEmSmlzLli0pLS2lW7duDB06lA8//LDOZSsqKvjtb39bNT558mTGjBkDwIMPPsiCBQuq5l1zzTU8/vjjxQtcdfIpFZIkSZKkGp7sf1iu5R321JMbXaZt27ZUVFQAcNppp3Hbbbfxne98p9ZlKyoqKC8v56tf/SoAQ4YMYciQIUAh4TB48GC6du0KwLXXXpvDFmhz2MJBkiRJktSsHHroobz22musWLGCc845hz59+tCzZ08eeughPv74Y6655homTJhAaWkpEyZMYNy4cYwYMYKnn36ayZMnM2rUKEpLS3n99dcZNmwYEydOBGDKlCn07NmTkpISzjnnHD766CMAOnfuzPe//3169epFSUkJL730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
+"
+>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="What-are-the-most-frequent-reasons-for-each-expungability-outcome?-">What are the most frequent reasons for each expungability outcome? <a name="q3" /><a class="anchor-link" href="#What-are-the-most-frequent-reasons-for-each-expungability-outcome?-">&#182;</a></h2><p>We can assess the most common reasons for each expungability decision:</p>
+
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[17]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">reasons</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">courtdata</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">&#39;expungable&#39;</span><span class="p">,</span> <span class="s1">&#39;reason&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">size</span><span class="p">())</span>
+<span class="n">reasons</span> <span class="o">=</span> <span class="n">reasons</span><span class="o">.</span><span class="n">rename</span><span class="p">({</span><span class="mi">0</span><span class="p">:</span><span class="s1">&#39;count&#39;</span><span class="p">},</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">autoex</span> <span class="o">=</span> <span class="n">reasons</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;expungable == &#39;Automatic&#39;&quot;</span><span class="p">)</span>
+<span class="n">autoex</span> <span class="o">=</span> <span class="n">autoex</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">percent</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="mi">100</span><span class="o">*</span><span class="p">(</span><span class="n">autoex</span><span class="p">[</span><span class="s1">&#39;count&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="nb">sum</span><span class="p">(</span><span class="n">autoex</span><span class="p">[</span><span class="s1">&#39;count&#39;</span><span class="p">])),</span> <span class="mi">2</span><span class="p">))</span>
+
+<span class="n">autopend</span> <span class="o">=</span> <span class="n">reasons</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;expungable == &#39;Automatic (pending)&#39;&quot;</span><span class="p">)</span>
+<span class="n">autopend</span> <span class="o">=</span> <span class="n">autopend</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">percent</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="mi">100</span><span class="o">*</span><span class="p">(</span><span class="n">autopend</span><span class="p">[</span><span class="s1">&#39;count&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="nb">sum</span><span class="p">(</span><span class="n">autopend</span><span class="p">[</span><span class="s1">&#39;count&#39;</span><span class="p">])),</span> <span class="mi">2</span><span class="p">))</span>
+
+<span class="n">petex</span> <span class="o">=</span> <span class="n">reasons</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;expungable == &#39;Petition&#39;&quot;</span><span class="p">)</span>
+<span class="n">petex</span> <span class="o">=</span> <span class="n">petex</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">percent</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="mi">100</span><span class="o">*</span><span class="p">(</span><span class="n">petex</span><span class="p">[</span><span class="s1">&#39;count&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="nb">sum</span><span class="p">(</span><span class="n">petex</span><span class="p">[</span><span class="s1">&#39;count&#39;</span><span class="p">])),</span> <span class="mi">2</span><span class="p">))</span>
+
+<span class="n">petpend</span> <span class="o">=</span> <span class="n">reasons</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;expungable == &#39;Petition (pending)&#39;&quot;</span><span class="p">)</span>
+<span class="n">petpend</span> <span class="o">=</span> <span class="n">petpend</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">percent</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="mi">100</span><span class="o">*</span><span class="p">(</span><span class="n">petpend</span><span class="p">[</span><span class="s1">&#39;count&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="nb">sum</span><span class="p">(</span><span class="n">petpend</span><span class="p">[</span><span class="s1">&#39;count&#39;</span><span class="p">])),</span> <span class="mi">2</span><span class="p">))</span>
+
+<span class="n">notex</span> <span class="o">=</span> <span class="n">reasons</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;expungable == &#39;Not eligible&#39;&quot;</span><span class="p">)</span>
+<span class="n">notex</span> <span class="o">=</span> <span class="n">notex</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">percent</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="mi">100</span><span class="o">*</span><span class="p">(</span><span class="n">notex</span><span class="p">[</span><span class="s1">&#39;count&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="nb">sum</span><span class="p">(</span><span class="n">notex</span><span class="p">[</span><span class="s1">&#39;count&#39;</span><span class="p">])),</span> <span class="mi">2</span><span class="p">))</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[18]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">autoex</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s1">&#39;count&#39;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+<div class="jp-Cell-outputWrapper">
+
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+
+<div class="jp-OutputArea-child">
+
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[18]:</div>
+
+
+
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th></th>
+      <th>count</th>
+      <th>percent</th>
+    </tr>
+    <tr>
+      <th>expungable</th>
+      <th>reason</th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th rowspan="2" valign="top">Automatic</th>
+      <th>Dismissal of misdemeanor charges with no prior convictions on the person's record and no arrests or charges in the past 3 years</th>
+      <td>561002</td>
+      <td>92.76</td>
+    </tr>
+    <tr>
+      <th>Conviction of misdemeanor charges covered under 19.2-392.6-A or 19.2-392.6-B, with no class 3 or 4 felony conviction within the past 20 years, no felony within the past 10 years, and no class 1 or 2 felony or any other felony punishable by imprisonment for life, and no convictions of any other kind within 7 years from disposition date</th>
+      <td>43762</td>
+      <td>7.24</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[19]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">autopend</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s1">&#39;count&#39;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+<div class="jp-Cell-outputWrapper">
+
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+
+<div class="jp-OutputArea-child">
+
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[19]:</div>
+
+
+
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th></th>
+      <th>count</th>
+      <th>percent</th>
+    </tr>
+    <tr>
+      <th>expungable</th>
+      <th>reason</th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th rowspan="3" valign="top">Automatic (pending)</th>
+      <th>Conviction of misdemeanor charges with no class 3 or 4 felony conviction within the past 20 years, no felony within the past 10 years, and no class 1 or 2 felony or any other felony punishable by imprisonment for life, but with convictions of another kind within 7 years from disposition date</th>
+      <td>192673</td>
+      <td>80.86</td>
+    </tr>
+    <tr>
+      <th>Dismissal of misdemeanor charges with no prior convictions on the person's record and no arrests or charges in the past 3 years</th>
+      <td>41214</td>
+      <td>17.30</td>
+    </tr>
+    <tr>
+      <th>Conviction of misdemeanor charges covered under 19.2-392.6-A or 19.2-392.6-B, with no class 3 or 4 felony conviction within the past 20 years, no felony within the past 10 years, and no class 1 or 2 felony or any other felony punishable by imprisonment for life, and no convictions of any other kind within 7 years from disposition date</th>
+      <td>4401</td>
+      <td>1.85</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[20]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">petex</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s1">&#39;count&#39;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+<div class="jp-Cell-outputWrapper">
+
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+
+<div class="jp-OutputArea-child">
+
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[20]:</div>
+
+
+
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th></th>
+      <th>count</th>
+      <th>percent</th>
+    </tr>
+    <tr>
+      <th>expungable</th>
+      <th>reason</th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th rowspan="7" valign="top">Petition</th>
+      <th>Conviction of misdemeanor charges other than those covered under 19.2-392.6-A, 19.2-392.6-B, and 19.2-392.12, with no class 3 or 4 felony conviction within the past 20 years, no felony within the past 10 years, and no class 1 or 2 felony or any other felony punishable by imprisonment for life, and no convictions of any other kind within 7 years from disposition date</th>
+      <td>897257</td>
+      <td>50.70</td>
+    </tr>
+    <tr>
+      <th>Not convicted, misdemeanor, but prior convictions on the person's record</th>
+      <td>865456</td>
+      <td>48.91</td>
+    </tr>
+    <tr>
+      <th>Dismissal of misdemeanor charges with no prior convictions on the person's record and no arrests or charges in the past 3 years</th>
+      <td>3771</td>
+      <td>0.21</td>
+    </tr>
+    <tr>
+      <th>Not convicted, felony charge covered in 19.2-392.12</th>
+      <td>1718</td>
+      <td>0.10</td>
+    </tr>
+    <tr>
+      <th>Conviction of misdemeanor charges covered under 19.2-392.6-A or 19.2-392.6-B, with no class 3 or 4 felony conviction within the past 20 years, no felony within the past 10 years, and no class 1 or 2 felony or any other felony punishable by imprisonment for life, and no convictions of any other kind within 7 years from disposition date</th>
+      <td>1447</td>
+      <td>0.08</td>
+    </tr>
+    <tr>
+      <th>Dismissal of misdemeanor charges with no prior convictions on the person's record, but with arrests or charges in the past 3 years</th>
+      <td>3</td>
+      <td>0.00</td>
+    </tr>
+    <tr>
+      <th>Conviction of felony charges covered in section 19.2-392.12, and has not been convicted of any other felony within the past 10 years of the petition, with no class 3 or 4 felony conviction within the past 20 years, and no class 1 or 2 felony or any other felony punishable by imprisonment for life</th>
+      <td>1</td>
+      <td>0.00</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[21]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">petpend</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s1">&#39;count&#39;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+<div class="jp-Cell-outputWrapper">
+
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+
+<div class="jp-OutputArea-child">
+
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[21]:</div>
+
+
+
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th></th>
+      <th>count</th>
+      <th>percent</th>
+    </tr>
+    <tr>
+      <th>expungable</th>
+      <th>reason</th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th rowspan="6" valign="top">Petition (pending)</th>
+      <th>Conviction of misdemeanor charges with no class 3 or 4 felony conviction within the past 20 years, no felony within the past 10 years, and no class 1 or 2 felony or any other felony punishable by imprisonment for life, but with convictions of another kind within 7 years from disposition date</th>
+      <td>2002502</td>
+      <td>77.09</td>
+    </tr>
+    <tr>
+      <th>Not convicted, misdemeanor, but prior convictions on the person's record</th>
+      <td>532526</td>
+      <td>20.50</td>
+    </tr>
+    <tr>
+      <th>Conviction of misdemeanor charges other than those covered under 19.2-392.6-A, 19.2-392.6-B, and 19.2-392.12, with no class 3 or 4 felony conviction within the past 20 years, no felony within the past 10 years, and no class 1 or 2 felony or any other felony punishable by imprisonment for life, and no convictions of any other kind within 7 years from disposition date</th>
+      <td>61569</td>
+      <td>2.37</td>
+    </tr>
+    <tr>
+      <th>Not convicted, felony charge covered in 19.2-392.12</th>
+      <td>884</td>
+      <td>0.03</td>
+    </tr>
+    <tr>
+      <th>Conviction of felony charges covered in section 19.2-392.12, but has been convicted of another felony within the past 10 years of the petition, with no class 3 or 4 felony conviction within the past 20 years, and no class 1 or 2 felony or any other felony punishable by imprisonment for life</th>
+      <td>1</td>
+      <td>0.00</td>
+    </tr>
+    <tr>
+      <th>Dismissal of misdemeanor charges with no prior convictions on the person's record, but with arrests or charges in the past 3 years</th>
+      <td>1</td>
+      <td>0.00</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[22]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">notex</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s1">&#39;count&#39;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+<div class="jp-Cell-outputWrapper">
+
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+
+<div class="jp-OutputArea-child">
+
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[22]:</div>
+
+
+
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th></th>
+      <th>count</th>
+      <th>percent</th>
+    </tr>
+    <tr>
+      <th>expungable</th>
+      <th>reason</th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th rowspan="7" valign="top">Not eligible</th>
+      <th>Conviction and convicted of another felony within the past 10 years of the petition</th>
+      <td>1735581</td>
+      <td>55.93</td>
+    </tr>
+    <tr>
+      <th>Not convicted, felony charge covered in a section other than 19.2-392.12</th>
+      <td>973140</td>
+      <td>31.36</td>
+    </tr>
+    <tr>
+      <th>Conviction with a prior class 3 or 4 felony conviction within the past 20 years</th>
+      <td>373790</td>
+      <td>12.05</td>
+    </tr>
+    <tr>
+      <th>Conviction, previously convicted of a class 1 or 2 felony or any other felony punishable by imprisonment for life</th>
+      <td>12603</td>
+      <td>0.41</td>
+    </tr>
+    <tr>
+      <th>Conviction of misdemeanor charges with no class 3 or 4 felony conviction within the past 20 years, no felony within the past 10 years, and no class 1 or 2 felony or any other felony punishable by imprisonment for life, but with convictions of another kind within 7 years from disposition date</th>
+      <td>3848</td>
+      <td>0.12</td>
+    </tr>
+    <tr>
+      <th>Conviction of misdemeanor charges covered under 19.2-392.12, with no class 3 or 4 felony conviction within the past 20 years, no felony within the past 10 years, and no class 1 or 2 felony or any other felony punishable by imprisonment for life, and no convictions of any other kind within 7 years from disposition date</th>
+      <td>3826</td>
+      <td>0.12</td>
+    </tr>
+    <tr>
+      <th>Conviction of felony charges that are not covered in section 19.2-392.12</th>
+      <td>160</td>
+      <td>0.01</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="How-do-these-reasons-differ-by-race?--">How do these reasons differ by race?  <a name="q4" /><a class="anchor-link" href="#How-do-these-reasons-differ-by-race?--">&#182;</a></h2>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">reasons</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">courtdata</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">&#39;expungable&#39;</span><span class="p">,</span> <span class="s1">&#39;reason&#39;</span><span class="p">,</span> <span class="s1">&#39;Race&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">unstack</span><span class="p">())</span>
+<span class="n">reasons</span> <span class="o">=</span> <span class="n">reasons</span><span class="o">.</span><span class="n">rename</span><span class="p">({</span><span class="mi">0</span><span class="p">:</span><span class="s1">&#39;count&#39;</span><span class="p">},</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">autoex</span> <span class="o">=</span> <span class="n">reasons</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;expungable == &#39;Automatic&#39;&quot;</span><span class="p">)</span>
+<span class="n">autoex</span> <span class="o">=</span> <span class="p">(</span><span class="mf">100.</span> <span class="o">*</span> <span class="n">autoex</span> <span class="o">/</span> <span class="n">autoex</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="n">autopend</span> <span class="o">=</span> <span class="n">reasons</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;expungable == &#39;Automatic (pending)&#39;&quot;</span><span class="p">)</span>
+<span class="n">autopend</span> <span class="o">=</span> <span class="p">(</span><span class="mf">100.</span> <span class="o">*</span> <span class="n">autopend</span> <span class="o">/</span> <span class="n">autopend</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="n">petex</span> <span class="o">=</span> <span class="n">reasons</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;expungable == &#39;Petition&#39;&quot;</span><span class="p">)</span>
+<span class="n">petex</span> <span class="o">=</span> <span class="p">(</span><span class="mf">100.</span> <span class="o">*</span> <span class="n">petex</span> <span class="o">/</span> <span class="n">petex</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="n">petpend</span> <span class="o">=</span> <span class="n">reasons</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;expungable == &#39;Petition (pending)&#39;&quot;</span><span class="p">)</span>
+<span class="n">petpend</span> <span class="o">=</span> <span class="p">(</span><span class="mf">100.</span> <span class="o">*</span> <span class="n">petpend</span> <span class="o">/</span> <span class="n">petpend</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="n">notex</span> <span class="o">=</span> <span class="n">reasons</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;expungable == &#39;Not eligible&#39;&quot;</span><span class="p">)</span>
+<span class="n">notex</span> <span class="o">=</span> <span class="p">(</span><span class="mf">100.</span> <span class="o">*</span> <span class="n">notex</span> <span class="o">/</span> <span class="n">notex</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">autoex</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s1">&#39;White (Non-Hispanic)&#39;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">autopend</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s1">&#39;White (Non-Hispanic)&#39;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">petex</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s1">&#39;White (Non-Hispanic)&#39;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">petpend</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s1">&#39;White (Non-Hispanic)&#39;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">notex</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s1">&#39;White (Non-Hispanic)&#39;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
 </div>
 
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
