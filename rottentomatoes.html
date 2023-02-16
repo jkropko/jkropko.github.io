@@ -14586,7 +14586,19 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
     </script>
     <!-- End of mathjax configuration --></head>
 <body class="jp-Notebook" data-jp-theme-light="true" data-jp-theme-name="JupyterLab Light">
-<div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h1 id="Web-scraping-Rotten-Tomatoes">Web scraping Rotten Tomatoes<a class="anchor-link" href="#Web-scraping-Rotten-Tomatoes">&#182;</a></h1><h3 id="Pulling-data-from-https://www.rottentomatoes.com/browse/movies_in_theaters/sort:a_z?page=8">Pulling data from https://www.rottentomatoes.com/browse/movies_in_theaters/sort:a_z?page=8<a class="anchor-link" href="#Pulling-data-from-https://www.rottentomatoes.com/browse/movies_in_theaters/sort:a_z?page=8">&#182;</a></h3><h3 id="Last-updated:-2/15/2023">Last updated: 2/15/2023<a class="anchor-link" href="#Last-updated:-2/15/2023">&#182;</a></h3><p>First we import the following libraries:</p>
+
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -14606,6 +14618,18 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
 </div>
 </div>
 
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p>Next we use https://httpbin.org/user-agent to find the user-agent specifically tied to our Python/requests combination and use it to build the headers we will send to Rotten Tomatoes (because we have proper etiquette):</p>
+
+</div>
+</div>
+</div>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
@@ -14618,9 +14642,6 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
 <span class="n">useragent</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="p">)[</span><span class="s1">'user-agent'</span><span class="p">]</span>
 <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'User-Agent'</span><span class="p">:</span> <span class="n">useragent</span><span class="p">,</span>
           <span class="s1">'From'</span><span class="p">:</span> <span class="s1">'jkropko@virginia.edu'</span><span class="p">}</span>
-<span class="n">url</span> <span class="o">=</span> <span class="s1">'https://www.rottentomatoes.com/browse/movies_in_theaters/sort:a_z?page=8'</span>
-<span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span> <span class="o">=</span> <span class="n">headers</span><span class="p">)</span>
-<span class="n">mysoup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
 </pre></div>
 
      </div>
@@ -14628,6 +14649,76 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
 </div>
 </div>
 
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p>We use requests to extract the HTML from this webpage:</p>
+
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[2]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">url</span> <span class="o">=</span> <span class="s1">'https://www.rottentomatoes.com/browse/movies_in_theaters/sort:a_z?page=8'</span>
+<span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span> <span class="o">=</span> <span class="n">headers</span><span class="p">)</span>
+<span class="n">r</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p>And we parse the HTML using BeautifulSoup():</p>
+
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[2]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">mysoup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p>Now it is time to extract the data we want. Each movie, along with all its data, is contained in an <code>&lt;a&gt;</code> tag with the <code>js-tile-link</code> class, and the <code>href</code> attribute present (we only knew that after a ton of trial-and-error):</p>
+
+</div>
+</div>
+</div>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
@@ -14636,7 +14727,7 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[3]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">movies</span> <span class="o">=</span> <span class="n">mysoup</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s1">'a'</span><span class="p">,</span> <span class="s2">"js-tile-link"</span><span class="p">,</span> <span class="n">href</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">movies</span> <span class="o">=</span> <span class="n">mysoup</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s1">'a'</span><span class="p">,</span> <span class="s1">'js-tile-link'</span><span class="p">,</span> <span class="n">href</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 
      </div>
@@ -14644,6 +14735,18 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
 </div>
 </div>
 
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p>From each of these tags, we can extract the title, various scores, and the hyperlink to the specific movie in question (where more scrapable data lives). Here we can put each of these datapoints into a dictionary, and generate a list of dictionaries with a list comprehension:</p>
+
+</div>
+</div>
+</div>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
@@ -14665,12 +14768,24 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
 </div>
 </div>
 
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p>Now let's build a spider! We have all of the endpoints that point to each movie's page on Rotten Tomatoes. If we use a loop across the items in <code>records</code>, we can pull each endpoint, extract many more features from the page, and add them to each dictionary in the list. The line <code>print(f&quot;Now scraping from the webpage for {s['title']}&quot;)</code> tells Python to print statements about which page it is scraping. This helps us see the progress so we know the code isn't frozen. (This code uses a few things beyond the scope of this course. <code>zip</code> is used to loop across two lists of equal length at once, operating on corresponding elements of the two lists. <code>.update()</code> is used to append dictionaries together.)</p>
+
+</div>
+</div>
+</div>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[5]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">records</span><span class="p">:</span>
@@ -14764,6 +14879,48 @@ Now scraping from the webpage for Of an Age
 Now scraping from the webpage for One Fine Morning
 Now scraping from the webpage for Only in Theaters
 Now scraping from the webpage for Pacifiction
+Now scraping from the webpage for Pathaan
+Now scraping from the webpage for Ping Pong: The Triumph
+Now scraping from the webpage for Plane
+Now scraping from the webpage for Puss in Boots: The Last Wish
+Now scraping from the webpage for RRR
+Now scraping from the webpage for Saint Omer
+Now scraping from the webpage for Seriously Red
+Now scraping from the webpage for Sharper
+Now scraping from the webpage for She Came from the Woods
+Now scraping from the webpage for Shehzada
+Now scraping from the webpage for Shiv Shastri Balboa
+Now scraping from the webpage for Skinamarink
+Now scraping from the webpage for Someone You Loved
+Now scraping from the webpage for The Banshees of Inisherin
+Now scraping from the webpage for The Blue Caftan
+Now scraping from the webpage for The Conformist
+Now scraping from the webpage for The Fabelmans
+Now scraping from the webpage for The First Fallen
+Now scraping from the webpage for The First Step
+Now scraping from the webpage for The Integrity of Joseph Chambers
+Now scraping from the webpage for The Other Fellow
+Now scraping from the webpage for The Outwaters
+Now scraping from the webpage for The Son
+Now scraping from the webpage for The Trial
+Now scraping from the webpage for The Wandering Earth II
+Now scraping from the webpage for The Weapon
+Now scraping from the webpage for The Whale
+Now scraping from the webpage for Titanic
+Now scraping from the webpage for Titanic: 25th Anniversary
+Now scraping from the webpage for Triangle of Sadness
+Now scraping from the webpage for Tu Hovein Main Hovan
+Now scraping from the webpage for Turn Every Page: The Adventures of Robert Caro and Robert Gottlieb
+Now scraping from the webpage for Tár
+Now scraping from the webpage for UFC 284: Makhachev vs. Volkanovski
+Now scraping from the webpage for Utama
+Now scraping from the webpage for Vinaro Bhagyamu Vishnu Katha
+Now scraping from the webpage for Violent Night
+Now scraping from the webpage for We Have a Ghost
+Now scraping from the webpage for Winnie-the-Pooh: Blood and Honey
+Now scraping from the webpage for Women Talking
+Now scraping from the webpage for Your Place or Mine
+Now scraping from the webpage for iMordecai
 </pre>
 </div>
 </div>
@@ -14772,31 +14929,28 @@ Now scraping from the webpage for Pacifiction
 
 </div>
 
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p>To go from a list of dictionaries to a data frame, we can use the <code>pd.DataFrame.from_records()</code> method:</p>
+
+</div>
+</div>
+</div>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[6]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">records_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_records</span><span class="p">(</span><span class="n">records</span><span class="p">)</span>
-</pre></div>
-
-     </div>
-</div>
-</div>
-</div>
-
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">records_df</span>
+<span class="n">records_df</span>
 </pre></div>
 
      </div>
@@ -14811,7 +14965,8 @@ Now scraping from the webpage for Pacifiction
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h2 id="Correlation-between-audience-score-and-critics-score">Correlation between audience score and critics score<a class="anchor-link" href="#Correlation-between-audience-score-and-critics-score">&#182;</a></h2>
+<p>Finally, to get the correlation between audience score and critics score, we first have to replace the '' values in the two scores with <code>np.nan</code> (we'll cover <code>.replace()</code> in module 8):</p>
+
 </div>
 </div>
 </div>
@@ -14820,7 +14975,7 @@ Now scraping from the webpage for Pacifiction
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[8]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">records_df</span><span class="p">[</span><span class="s1">'audiencescore'</span><span class="p">]</span> <span class="o">=</span> <span class="n">records_df</span><span class="p">[</span><span class="s1">'audiencescore'</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">({</span><span class="s1">''</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">})</span>
@@ -14832,12 +14987,24 @@ Now scraping from the webpage for Pacifiction
 </div>
 </div>
 
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p>Now we can drop the rows with a missing value with <code>.dropna()</code>, convert both columns to integers (again, covered in module 8), and see the correlatio</p>
+
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[9]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">scores</span> <span class="o">=</span> <span class="n">records_df</span><span class="p">[[</span><span class="s1">'audiencescore'</span><span class="p">,</span> <span class="s1">'criticsscore'</span><span class="p">]]</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
@@ -14849,6 +15016,63 @@ Now scraping from the webpage for Pacifiction
      </div>
 </div>
 </div>
+</div>
+
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[9]:</div>
+
+
+
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>audiencescore</th>
+      <th>criticsscore</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>audiencescore</th>
+      <td>1.000000</td>
+      <td>0.487121</td>
+    </tr>
+    <tr>
+      <th>criticsscore</th>
+      <td>0.487121</td>
+      <td>1.000000</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+
 </div>
 
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
