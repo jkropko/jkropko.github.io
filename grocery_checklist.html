@@ -1,228 +1,102 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Shopping Checklist</title>
-<style>
-  :root { --bg:#0b0b0c; --card:#16181d; --ink:#e8edf2; --muted:#9aa4af; --accent:#5fb3ff; --good:#38c172; }
-  html,body{height:100%}
-  body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;line-height:1.4}
-  .wrap{max-width:820px;margin:32px auto;padding:0 16px}
-  header{display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:space-between}
-  h1{font-size:1.6rem;margin:0}
-  .controls{display:flex;gap:8px;flex-wrap:wrap}
-  button{background:var(--card);color:var(--ink);border:1px solid #2a2f39;border-radius:10px;padding:10px 12px;cursor:pointer}
-  button:hover{border-color:#3a4250}
-  .counter{font-size:.95rem;color:var(--muted)}
-  .section{background:var(--card);border:1px solid #222834;border-radius:14px;margin:16px 0;overflow:hidden}
-  .section h2{margin:0;padding:14px 16px;border-bottom:1px solid #222834;font-size:1.1rem;display:flex;align-items:center;justify-content:space-between}
-  .items{padding:8px 16px 6px}
-  .item{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px dashed #232935}
-  .item:last-child{border-bottom:none}
-  input[type="checkbox"]{width:20px;height:20px;margin-top:2px;accent-color:var(--accent)}
-  label{flex:1}
-  .muted{color:var(--muted)}
-  .footer{color:var(--muted);font-size:.9rem;margin-top:12px}
-  .tag{padding:2px 8px;border-radius:999px;background:#1f2633;border:1px solid #2b3443;color:#c6d3e3;font-size:.8rem}
-</style>
+  <meta charset="UTF-8" />
+  <title>Wegmans Shopping Checklist</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+      padding: 1.5rem;
+      max-width: 800px;
+      margin: auto;
+    }
+    h1 {
+      margin-bottom: 0.5rem;
+    }
+    h2 {
+      margin-top: 1.5rem;
+      margin-bottom: 0.25rem;
+    }
+    ul {
+      list-style: none;
+      padding-left: 0;
+      margin-top: 0.25rem;
+    }
+    li {
+      margin: 0.15rem 0;
+    }
+    label {
+      cursor: pointer;
+    }
+    input[type="checkbox"] {
+      margin-right: 0.5rem;
+    }
+    .section {
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+  </style>
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <div>
-      <h1>Shopping Checklist</h1>
-      <div class="counter" id="counter">0 of 0 checked</div>
-    </div>
-    <div class="controls">
-      <button id="selectAll">Select all</button>
-      <button id="clearAll">Clear all</button>
-      <button id="expandAll">Expand all</button>
-      <button id="collapseAll">Collapse all</button>
-      <button id="printBtn">Print</button>
-    </div>
-  </header>
+  <h1>Wegmans Shopping Checklist</h1>
 
-  <div id="list"></div>
+  <div class="section">
+    <h2>🥦 Produce Department</h2>
+    <ul>
+      <li><label><input type="checkbox">Apples</label></li>
+      <li><label><input type="checkbox">Spring onions (scallions)</label></li>
+      <li><label><input type="checkbox">Garlic — 1 bulb</label></li>
+      <li><label><input type="checkbox">Red chili — 1</label></li>
+      <li><label><input type="checkbox">Carrots — 2</label></li>
+      <li><label><input type="checkbox">Green beans — 1 small bag</label></li>
+      <li><label><input type="checkbox">Broccoli — ½ head</label></li>
+      <li><label><input type="checkbox">Red bell pepper — 1</label></li>
+      <li><label><input type="checkbox">Mung bean sprouts — small container</label></li>
+      <li><label><input type="checkbox">Cilantro — 1 bunch</label></li>
+      <li><label><input type="checkbox">Limes — 2–3</label></li>
+      <li><label><input type="checkbox">Tomatoes — several</label></li>
+      <li><label><input type="checkbox">Red onion — 1 small</label></li>
+      <li><label><input type="checkbox">Onions — 2–3</label></li>
+      <li><label><input type="checkbox">Avocados — 1–2</label></li>
+      <li><label><input type="checkbox">Salad kits — 3</label></li>
+    </ul>
+  </div>
 
-  <div class="footer">Tip: Your progress is saved to this browser (localStorage). You can print or share this file; recipients will have their own local progress.</div>
-</div>
+  <div class="section">
+    <h2>🥬 Organic / Plant-Based Refrigerated</h2>
+    <ul>
+      <li><label><input type="checkbox">Extra-firm tofu — 3 blocks</label></li>
+      <li><label><input type="checkbox">Beyond Burgers (if refrigerated)</label></li>
+    </ul>
+  </div>
 
-<script>
-const DATA = [
-  {
-    title: "🥦 Produce",
-    items: [
-      "1 small sweet onion",
-      "2 large onions",
-      "4 cloves garlic",
-      "1 large eggplant",
-      "4 small zucchini",
-      "2 large green bell peppers",
-      "2 red or orange or yellow bell peppers",
-      "2 large tomatoes",
-      "2–3 cups baby spinach (not frozen if possible)",
-      "~1 kg (2 lb) sweet potatoes (about 3 medium-large)",
-      "Baby bella mushrooms",
-      "Carrots"
-    ]
-  },
-  {
-    title: "🥫 Canned, Jarred & Dry Goods",
-    items: [
-      "1 (15 oz) can diced tomatoes",
-      "1 (6 oz) can tomato paste",
-      "1 (14.5 oz / 400 g) can chopped tomatoes",
-      "1 (14.5 oz / 400 g) can chickpeas (drained, rinsed)",
-      "1 (14 oz / 400 ml) can coconut milk",
-      "1 jar sun-dried tomatoes (~⅓ cup chopped)",
-      "12 oz (340 g) short pasta (penne, fusilli, etc.)"
-    ]
-  },
-  {
-    title: "🧃 Broths & Liquids",
-    items: [
-      "3 cups vegetable broth"
-    ]
-  },
-  {
-    title: "🧀 Refrigerated / Vegan Dairy",
-    items: [
-      "Vegan mascarpone (or substitute: vegan cream cheese, sour cream, or coconut cream) – ~½ cup"
-    ]
-  },
-  {
-    title: "✅ Optional Garnishes / Add-Ons",
-    items: [
-      "Crusty bread (to serve with stew or ratatouille)"
-    ]
-  }
-];
+  <div class="section">
+    <h2>🥛 Dairy Alternatives</h2>
+    <ul>
+      <li><label><input type="checkbox">Unsweetened almond milk — 2 cartons</label></li>
+    </ul>
+  </div>
 
-const KEY = "grocery-checklist-v1";
-const listEl = document.getElementById("list");
-const counterEl = document.getElementById("counter");
+  <div class="section">
+    <h2>🥫 Center Store Aisles</h2>
 
-function loadState() {
-  try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch { return {}; }
-}
-function saveState(state) {
-  localStorage.setItem(KEY, JSON.stringify(state));
-}
-function slugify(text){
-  return text.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
-}
+    <h3>Asian / International</h3>
+    <ul>
+      <li><label><input type="checkbox">Tamarind paste or sauce</label></li>
+      <li><label><input type="checkbox">Tamari or soy sauce</label></li>
+      <li><label><input type="checkbox">Vegan fish sauce (optional)</label></li>
+      <li><label><input type="checkbox">Rice noodles — 1 package</label></li>
+    </ul>
 
-function render() {
-  const state = loadState();
-  listEl.innerHTML = "";
-  let total = 0, done = 0;
+    <h3>Spices</h3>
+    <ul>
+      <li><label><input type="checkbox">Black pepper</label></li>
+      <li><label><input type="checkbox">Chili powder</label></li>
+      <li><label><input type="checkbox">Ground cumin</label></li>
+    </ul>
 
-  DATA.forEach((section, sIdx) => {
-    const secId = slugify(section.title);
-    const expanded = state[secId]?.expanded ?? true;
-    const card = document.createElement("div");
-    card.className = "section";
-
-    const h2 = document.createElement("h2");
-    const title = document.createElement("span");
-    title.textContent = section.title;
-    const toggle = document.createElement("button");
-    toggle.className = "tag";
-    toggle.textContent = expanded ? "Collapse" : "Expand";
-    toggle.addEventListener("click", () => {
-      const st = loadState();
-      st[secId] = st[secId] || {};
-      st[secId].expanded = !expanded;
-      saveState(st);
-      render();
-    });
-    h2.appendChild(title);
-    h2.appendChild(toggle);
-
-    const items = document.createElement("div");
-    items.className = "items";
-    items.style.display = expanded ? "block" : "none";
-
-    section.items.forEach((text, iIdx) => {
-      const id = `${secId}__${iIdx}`;
-      const checked = !!state[id];
-
-      const row = document.createElement("div");
-      row.className = "item";
-
-      const cb = document.createElement("input");
-      cb.type = "checkbox";
-      cb.id = id;
-      cb.checked = checked;
-      cb.addEventListener("change", () => {
-        const st = loadState();
-        if (cb.checked) st[id] = true; else delete st[id];
-        saveState(st);
-        updateCounter();
-      });
-
-      const label = document.createElement("label");
-      label.htmlFor = id;
-      label.textContent = text;
-
-      row.appendChild(cb);
-      row.appendChild(label);
-      items.appendChild(row);
-
-      total += 1;
-      if (checked) done += 1;
-    });
-
-    card.appendChild(h2);
-    card.appendChild(items);
-    listEl.appendChild(card);
-  });
-
-  counterEl.textContent = `${done} of ${total} checked`;
-}
-
-function updateCounter(){
-  // recompute based on current DOM
-  const boxes = Array.from(document.querySelectorAll('input[type="checkbox"]'));
-  const done = boxes.filter(b => b.checked).length;
-  counterEl.textContent = `${done} of ${boxes.length} checked`;
-}
-
-document.getElementById("selectAll").addEventListener("click", () => {
-  const state = loadState();
-  DATA.forEach((section, sIdx) => {
-    const secId = slugify(section.title);
-    section.items.forEach((_, iIdx) => state[`${secId}__${iIdx}`] = true);
-  });
-  saveState(state); render();
-});
-document.getElementById("clearAll").addEventListener("click", () => {
-  const state = loadState();
-  Object.keys(state).forEach(k => { if (k.includes("__")) delete state[k]; });
-  saveState(state); render();
-});
-document.getElementById("expandAll").addEventListener("click", () => {
-  const state = loadState();
-  DATA.forEach(section => {
-    const secId = slugify(section.title);
-    state[secId] = state[secId] || {};
-    state[secId].expanded = true;
-  });
-  saveState(state); render();
-});
-document.getElementById("collapseAll").addEventListener("click", () => {
-  const state = loadState();
-  DATA.forEach(section => {
-    const secId = slugify(section.title);
-    state[secId] = state[secId] || {};
-    state[secId].expanded = false;
-  });
-  saveState(state); render();
-});
-document.getElementById("printBtn").addEventListener("click", () => window.print());
-
-render();
-</script>
-</body>
-</html>
+    <h3>Baking / Health</h3>
+    <ul>
+      <li><label><input type="checkbox">Mapl
