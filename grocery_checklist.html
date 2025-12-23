@@ -1,153 +1,191 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Wegmans Shopping Checklist</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Wegmans Shopping List (Deduped)</title>
   <style>
-    body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      line-height: 1.5;
-      padding: 1.5rem;
-      max-width: 800px;
-      margin: auto;
-    }
-    h1 {
-      margin-bottom: 0.5rem;
-    }
-    h2 {
-      margin-top: 1.5rem;
-      margin-bottom: 0.25rem;
-    }
-    ul {
-      list-style: none;
-      padding-left: 0;
-      margin-top: 0.25rem;
-    }
-    li {
-      margin: 0.15rem 0;
-    }
-    label {
-      cursor: pointer;
-    }
-    input[type="checkbox"] {
-      margin-right: 0.5rem;
-    }
-    .section {
-      border-bottom: 1px solid #ddd;
-      padding-bottom: 0.75rem;
-      margin-bottom: 0.75rem;
-    }
+    :root { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }
+    body { margin: 24px; line-height: 1.35; }
+    h1 { margin: 0 0 12px; font-size: 1.4rem; }
+    .meta { color: #555; margin-bottom: 18px; }
+    section { margin: 18px 0; padding: 14px 14px 6px; border: 1px solid #ddd; border-radius: 12px; }
+    h2 { margin: 0 0 10px; font-size: 1.15rem; }
+    ul { list-style: none; padding-left: 0; margin: 0; }
+    li { display: flex; gap: 10px; align-items: flex-start; padding: 8px 2px; border-top: 1px solid #eee; }
+    li:first-child { border-top: none; }
+    label { cursor: pointer; flex: 1; }
+    input[type="checkbox"] { margin-top: 3px; transform: scale(1.15); }
+    .qty { color: #555; font-size: 0.95em; }
+    .controls { display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0 0; }
+    button { padding: 8px 10px; border-radius: 10px; border: 1px solid #ccc; background: #fafafa; cursor: pointer; }
+    button:hover { background: #f2f2f2; }
+    .checked label { text-decoration: line-through; color: #888; }
   </style>
 </head>
 <body>
-  <h1>Wegmans Shopping Checklist</h1>
+  <h1>Wegmans Shopping List (Sorted by Aisle)</h1>
+  <div class="meta">Deduped from recipes + your added items. Check items off as you shop.</div>
 
-  <div class="section">
-    <h2>🥦 Produce Department</h2>
-    <ul>
-      <li><label><input type="checkbox">Apples</label></li>
-      <li><label><input type="checkbox">Spring onions (scallions)</label></li>
-      <li><label><input type="checkbox">Garlic — 1 bulb</label></li>
-      <li><label><input type="checkbox">Red chili — 1</label></li>
-      <li><label><input type="checkbox">Carrots — 2</label></li>
-      <li><label><input type="checkbox">Green beans — 1 small bag</label></li>
-      <li><label><input type="checkbox">Broccoli — ½ head</label></li>
-      <li><label><input type="checkbox">Red bell pepper — 1</label></li>
-      <li><label><input type="checkbox">Mung bean sprouts — small container</label></li>
-      <li><label><input type="checkbox">Cilantro — 1 bunch</label></li>
-      <li><label><input type="checkbox">Limes — 2–3</label></li>
-      <li><label><input type="checkbox">Tomatoes — several</label></li>
-      <li><label><input type="checkbox">Red onion — 1 small</label></li>
-      <li><label><input type="checkbox">Onions — 2–3</label></li>
-      <li><label><input type="checkbox">Avocados — 1–2</label></li>
-      <li><label><input type="checkbox">Salad kits — 3</label></li>
-    </ul>
+  <div class="controls">
+    <button type="button" onclick="checkAll(true)">Check all</button>
+    <button type="button" onclick="checkAll(false)">Uncheck all</button>
   </div>
 
-  <div class="section">
-    <h2>🥬 Organic / Plant-Based Refrigerated</h2>
+  <!-- PRODUCE -->
+  <section>
+    <h2>Produce</h2>
     <ul>
-      <li><label><input type="checkbox">Extra-firm tofu — 3 blocks</label></li>
-      <li><label><input type="checkbox">Beyond Burgers (if refrigerated)</label></li>
-    </ul>
-  </div>
+      <li><input id="bananas-fresh" type="checkbox"><label for="bananas-fresh">Bananas (fresh)</label></li>
+      <li><input id="strawberries" type="checkbox"><label for="strawberries">Strawberries</label></li>
+      <li><input id="kiwi" type="checkbox"><label for="kiwi">Golden kiwi</label></li>
+      <li><input id="pineapple" type="checkbox"><label for="pineapple">Pineapple (fresh or canned — if buying canned, see “Canned Fruit” aisle)</label></li>
+      <li><input id="lime" type="checkbox"><label for="lime">Lime</label></li>
+      <li><input id="fruit-assorted" type="checkbox"><label for="fruit-assorted">Assorted fruit (acai bowl toppings)</label></li>
 
-  <div class="section">
-    <h2>🥛 Dairy Alternatives</h2>
+      <li><input id="red-bell-peppers" type="checkbox"><label for="red-bell-peppers">Red bell peppers</label></li>
+      <li><input id="red-onion" type="checkbox"><label for="red-onion">Red onion</label></li>
+      <li><input id="baby-spinach" type="checkbox"><label for="baby-spinach">Baby spinach</label></li>
+      <li><input id="cilantro" type="checkbox"><label for="cilantro">Cilantro <span class="qty">(optional)</span></label></li>
+    </ul>
+  </section>
+
+  <!-- FROZEN -->
+  <section>
+    <h2>Frozen</h2>
     <ul>
-      <li><label><input type="checkbox">Unsweetened almond milk — 2 cartons</label></li>
+      <li><input id="bananas-frozen" type="checkbox"><label for="bananas-frozen">Bananas (frozen)</label></li>
+      <li><input id="blueberries-frozen" type="checkbox"><label for="blueberries-frozen">Blueberries (frozen)</label></li>
+      <li><input id="acai" type="checkbox"><label for="acai">Acai (frozen packs) <span class="qty">(if using packs instead of powder)</span></label></li>
     </ul>
-  </div>
+  </section>
 
-  <div class="section">
-    <h2>🥫 Center Store Aisles</h2>
-
-    <h3>Asian / International</h3>
+  <!-- DAIRY ALTERNATIVES -->
+  <section>
+    <h2>Dairy Alternatives</h2>
     <ul>
-      <li><label><input type="checkbox">Tamarind paste or sauce</label></li>
-      <li><label><input type="checkbox">Tamari or soy sauce</label></li>
-      <li><label><input type="checkbox">Vegan fish sauce (optional)</label></li>
-      <li><label><input type="checkbox">Rice noodles — 1 package</label></li>
+      <li><input id="oatmilk" type="checkbox"><label for="oatmilk">Oat milk / plant milk <span class="qty">(2)</span></label></li>
     </ul>
+  </section>
 
-    <h3>Spices</h3>
+  <!-- PLANT-BASED / TOFU -->
+  <section>
+    <h2>Plant-Based Proteins</h2>
     <ul>
-      <li><label><input type="checkbox">Black pepper</label></li>
-      <li><label><input type="checkbox">Chili powder</label></li>
-      <li><label><input type="checkbox">Ground cumin</label></li>
+      <li><input id="tofu" type="checkbox"><label for="tofu">Extra-firm tofu <span class="qty">(1–2 blocks)</span></label></li>
+      <li><input id="sausage" type="checkbox"><label for="sausage">Vegan sausage patties</label></li>
     </ul>
+  </section>
 
-    <h3>Baking / Health</h3>
+  <!-- DELI / SAUCES (often near gravy, sauces, vegan) -->
+  <section>
+    <h2>Condiments & Sauces</h2>
     <ul>
-      <li><label><input type="checkbox">Maple syrup</label></li>
-      <li><label><input type="checkbox">Nutritional yeast</label></li>
-      <li><label><input type="checkbox">Hemp hearts</label></li>
-      <li><label><input type="checkbox">Apples &amp; cinnamon instant oatmeal</label></li>
+      <li><input id="bbq-sauce" type="checkbox"><label for="bbq-sauce">Barbecue sauce</label></li>
+      <li><input id="gravy" type="checkbox"><label for="gravy">Vegan brown gravy</label></li>
+      <li><input id="hotsauce" type="checkbox"><label for="hotsauce">Hot sauce or sriracha <span class="qty">(optional)</span></label></li>
+      <li><input id="sesame-oil" type="checkbox"><label for="sesame-oil">Toasted sesame oil</label></li>
+      <li><input id="veg-oil" type="checkbox"><label for="veg-oil">Vegetable oil</label></li>
     </ul>
+  </section>
 
-    <h3>Condiments</h3>
+  <!-- GRAINS / RICE / QUINOA -->
+  <section>
+    <h2>Rice, Grains & Pasta</h2>
     <ul>
-      <li><label><input type="checkbox">Barbecue sauce</label></li>
-      <li><label><input type="checkbox">Sriracha sauce</label></li>
-      <li><label><input type="checkbox">Dill sandwich pickles</label></li>
-      <li><label><input type="checkbox">Salsa or pico de gallo (jarred, if using)</label></li>
+      <li><input id="rice" type="checkbox"><label for="rice">Jasmine or basmati rice</label></li>
+      <li><input id="quinoa" type="checkbox"><label for="quinoa">Quinoa</label></li>
     </ul>
+  </section>
 
-    <h3>Canned Goods</h3>
+  <!-- BREAKFAST / CEREAL -->
+  <section>
+    <h2>Breakfast & Cereal</h2>
     <ul>
-      <li><label><input type="checkbox">Black beans — 1 can</label></li>
+      <li><input id="granola" type="checkbox"><label for="granola">Granola (vegan)</label></li>
     </ul>
+  </section>
 
-    <h3>Hot Beverages</h3>
+  <!-- BAKING -->
+  <section>
+    <h2>Baking</h2>
     <ul>
-      <li><label><input type="checkbox">Hot cocoa</label></li>
+      <li><input id="brown-sugar" type="checkbox"><label for="brown-sugar">Brown sugar</label></li>
     </ul>
-  </div>
+  </section>
 
-  <div class="section">
-    <h2>🍞 Bread / Bakery</h2>
+  <!-- NUTS / DRIED FRUIT / HEALTH -->
+  <section>
+    <h2>Nuts, Seeds & Dried Fruit</h2>
     <ul>
-      <li><label><input type="checkbox">Hamburger buns</label></li>
-      <li><label><input type="checkbox">Tortillas (corn or flour)</label></li>
+      <li><input id="pistachios" type="checkbox"><label for="pistachios">Raw pistachios</label></li>
+      <li><input id="shredded-coconut" type="checkbox"><label for="shredded-coconut">Shredded coconut</label></li>
     </ul>
-  </div>
+  </section>
 
-  <div class="section">
-    <h2>🥶 Frozen Foods</h2>
+  <!-- SUPPLEMENTS / NATURAL FOODS -->
+  <section>
+    <h2>Natural Foods / Supplements</h2>
     <ul>
-      <li><label><input type="checkbox">Frozen riced cauliflower — 3 bags</label></li>
-      <li><label><input type="checkbox">Frozen cauliflower</label></li>
-      <li><label><input type="checkbox">Frozen waffles</label></li>
-      <li><label><input type="checkbox">Curly fries</label></li>
-      <li><label><input type="checkbox">Beyond Burgers (if in frozen section)</label></li>
+      <li><input id="acai-powder" type="checkbox"><label for="acai-powder">Acai powder <span class="qty">(if not using frozen packs)</span></label></li>
+      <li><input id="coconut-water-powder" type="checkbox"><label for="coconut-water-powder">Coconut water powder</label></li>
     </ul>
-  </div>
+  </section>
 
-  <div class="section">
-    <h2>🥜 Snacks / Nuts</h2>
+  <!-- COFFEE / TEA -->
+  <section>
+    <h2>Coffee & Tea</h2>
     <ul>
-      <li><label><input type="checkbox">Roasted unsalted peanuts — 1 small bag</label></li>
+      <li><input id="decaf-instant" type="checkbox"><label for="decaf-instant">Decaf instant coffee</label></li>
     </ul>
-  </div>
+  </section>
+
+  <!-- SPICES -->
+  <section>
+    <h2>Spices & Seasoning</h2>
+    <ul>
+      <li><input id="salt" type="checkbox"><label for="salt">Salt</label></li>
+      <li><input id="pepper" type="checkbox"><label for="pepper">Black pepper</label></li>
+    </ul>
+  </section>
+
+  <script>
+    // Persist checkbox states
+    const boxes = Array.from(document.querySelectorAll('input[type="checkbox"]'));
+    const key = "wegmans_list_deduped_v1";
+
+    function load() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(key) || "{}");
+        boxes.forEach(b => {
+          if (saved[b.id] !== undefined) b.checked = saved[b.id];
+          b.closest("li").classList.toggle("checked", b.checked);
+        });
+      } catch (e) {}
+    }
+
+    function save() {
+      const state = {};
+      boxes.forEach(b => state[b.id] = b.checked);
+      localStorage.setItem(key, JSON.stringify(state));
+    }
+
+    function checkAll(val) {
+      boxes.forEach(b => {
+        b.checked = val;
+        b.closest("li").classList.toggle("checked", b.checked);
+      });
+      save();
+    }
+
+    boxes.forEach(b => {
+      b.addEventListener("change", () => {
+        b.closest("li").classList.toggle("checked", b.checked);
+        save();
+      });
+    });
+
+    load();
+  </script>
 </body>
 </html>
