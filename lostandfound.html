@@ -56,9 +56,9 @@
 
     .pointer {
       position: absolute;
-      left: 50%;
-      top: -8px;
-      transform: translateX(-50%);
+      left: 100%;
+      top: 50%;
+      transform: translateX(-50%) rotate(-90deg);
       width: 0;
       height: 0;
       border-left: 20px solid transparent;
@@ -121,16 +121,7 @@
     <div class="result" id="result">Click the wheel to begin.</div>
     <div class="hint">Wait, is this how lost and found works?</div>
 
-    <section class="legend" aria-label="Wheel labels">
-      <div class="legend-item">Keys</div>
-      <div class="legend-item">Headphones</div>
-      <div class="legend-item">Book</div>
-      <div class="legend-item">ENIGMA User Manual</div>
-      <div class="legend-item">Smartphone</div>
-      <div class="legend-item">Newspaper</div>
-      <div class="legend-item">Coffee Cup</div>
-      <div class="legend-item">Wallet</div>
-    </section>
+
   </main>
 
   <script>
@@ -259,7 +250,7 @@
 
       const winningIndex = labels.indexOf("ENIGMA User Manual");
       const targetCenter = winningIndex * segmentAngle + segmentAngle / 2;
-      const topPointerAngle = -Math.PI / 2;
+      const topPointerAngle = Math.PI / 2;
 
       const currentNormalized = ((rotation % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
       let finalRotation = topPointerAngle - targetCenter;
@@ -283,7 +274,11 @@
           requestAnimationFrame(animate);
         } else {
           isSpinning = false;
-          result.textContent = `Selected: ${labels[winningIndex]}`;
+          result.innerHTML = `
+            <div>You got: <strong>${labels[winningIndex]}</strong></div>
+            <div style="font-size: 0.9rem; color: gray;">
+                Too bad. I would've wanted the wallet or smartphone.
+            </div>`;;
         }
       }
 
