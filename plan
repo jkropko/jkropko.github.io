@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#16181d">
+<title>Home Base — Strength & Meals</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap');
+
+  :root {
+    --ink: #16181d;
+    --muted: #5c626e;
+    --line: #c8ccd4;
+    --line-soft: #e4e7ec;
+    --accent: #1f39c4;
+    --accent-soft: #eaedfb;
+    --green: #1f7a4d;
+    --green-soft: #e7f2ec;
+    --paper: #ffffff;
+    --bg: #eceef2;
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    font-family: 'Barlow', system-ui, sans-serif;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  .app {
+    max-width: 640px;
+    margin: 0 auto;
+    background: var(--paper);
+    min-height: 100vh;
+    box-shadow: 0 0 40px rgba(20,24,35,0.12);
+  }
+
+  /* ---------- Sticky top bar ---------- */
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: var(--paper);
+    padding: max(env(safe-area-inset-top), 14px) 16px 0;
+    border-bottom: 3px solid var(--ink);
+  }
+  .brand {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .brand h1 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    line-height: 0.95;
+    margin: 0;
+  }
+  .brand h1 span { color: var(--accent); }
+  .brand .stamp {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  /* segmented tab control */
+  .tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+  }
+  .tab {
+    appearance: none;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 14px;
+    color: var(--muted);
+    padding: 11px 6px 9px;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -3px;
+    transition: color .15s ease, border-color .15s ease;
+  }
+  .tab .dot {
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 2px;
+    margin-right: 6px;
+    vertical-align: 1px;
+    background: var(--line);
+  }
+  .tab.strength .dot { background: var(--accent); }
+  .tab.meals .dot { background: var(--green); }
+  .tab[aria-selected="true"] { color: var(--ink); }
+  .tab.strength[aria-selected="true"] { border-bottom-color: var(--accent); }
+  .tab.meals[aria-selected="true"] { border-bottom-color: var(--green); }
+  .tab:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+
+  /* ---------- Panels ---------- */
+  .panel { padding: 16px 16px 30px; }
+  .panel[hidden] { display: none; }
+
+  .lede {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    line-height: 1.6;
+    margin: 2px 0 16px;
+  }
+  .lede b { color: var(--ink); }
+
+  .sec-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 12px;
+    color: var(--muted);
+    margin: 22px 0 8px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+
+  /* ---------- Info card grid (rules / targets) ---------- */
+  .cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .card {
+    border: 1px solid var(--line-soft);
+    border-radius: 8px;
+    padding: 9px 11px;
+  }
+  .card .k {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    color: var(--accent);
+    margin-bottom: 2px;
+  }
+  .card.green .k { color: var(--green); }
+  .card .v { font-size: 12.5px; line-height: 1.3; color: var(--ink); }
+
+  /* ---------- Workout block ---------- */
+  .block-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 20px 0 4px;
+  }
+  .badge {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 6px;
+    background: var(--accent);
+    color: #fff;
+    flex: none;
+  }
+  .badge.outline {
+    background: var(--paper);
+    color: var(--accent);
+    border: 2px solid var(--accent);
+  }
+  .block-head h2 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-size: 18px;
+    margin: 0;
+  }
+  .hint {
+    font-size: 10.5px;
+    color: var(--muted);
+    font-style: italic;
+    margin: 0 0 10px 42px;
+  }
+
+  /* exercise as a card */
+  .ex {
+    border: 1px solid var(--line-soft);
+    border-radius: 10px;
+    padding: 10px 12px 12px;
+    margin-bottom: 10px;
+  }
+  .ex-top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .ex-top b { font-weight: 600; font-size: 15.5px; line-height: 1.1; }
+  .pre {
+    flex: none;
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    font-size: 12px;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 3px 8px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  .cue {
+    display: block;
+    color: var(--muted);
+    font-size: 11.5px;
+    line-height: 1.3;
+    margin: 3px 0 9px;
+  }
+
+  /* week tracker inputs */
+  .weeks {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+  }
+  .wk {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 3px;
+  }
+  .wk label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    font-size: 9px;
+    color: var(--muted);
+    text-align: center;
+  }
+  .wk input {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: #fafbfd;
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink);
+    text-align: center;
+    padding: 7px 2px;
+    min-height: 40px;
+  }
+  .wk input::placeholder { color: var(--line); font-weight: 400; }
+  .wk input:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: #fff;
+    box-shadow: 0 0 0 2px var(--accent-soft);
+  }
+  .wk input:not(:placeholder-shown) {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+
+  .toolbar {
+    display: flex;
+    justify-content: flex-end;
+    margin: 4px 0 2px;
+  }
+  .btn-clear {
+    appearance: none;
+    border: 1px solid var(--line);
+    background: var(--paper);
+    color: var(--muted);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-size: 11px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    cursor: pointer;
+  }
+  .btn-clear:active { background: var(--bg); }
+
+  /* ---------- Meal day cards ---------- */
+  .day {
+    border: 1px solid var(--line-soft);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+  .day-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 9px 13px;
+    background: #fafbfd;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .day-head .who {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .day-head .num {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 24px;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .day-head .lbl {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+  }
+  .day-head .tot {
+    font-family: 'Space Mono', monospace;
+    text-align: right;
+    line-height: 1.15;
+  }
+  .day-head .tot .cal { font-size: 14px; font-weight: 700; }
+  .day-head .tot .pro { font-size: 13px; font-weight: 700; color: var(--green); }
+  .day-head .tot .u { font-size: 8px; color: var(--muted); text-transform: uppercase; }
+
+  .meals { list-style: none; margin: 0; padding: 4px 13px 8px; }
+  .meals li {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 7px 0;
+    border-bottom: 1px dashed var(--line-soft);
+  }
+  .meals li:last-child { border-bottom: none; }
+  .meals .slot {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-size: 10px;
+    color: var(--muted);
+    flex: none;
+    width: 62px;
+    padding-top: 2px;
+  }
+  .meals .food { font-size: 13.5px; line-height: 1.25; flex: 1; }
+  .meals .macro {
+    display: block;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 1px;
+  }
+  .meals .macro b { color: var(--green); }
+
+  /* ---------- Footer notes ---------- */
+  .notes { margin-top: 22px; }
+  .notes h3 {
+    font-family: 'Barlow Condensed', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 13px;
+    margin: 16px 0 6px;
+    color: var(--accent);
+    padding-top: 12px;
+    border-top: 2px solid var(--ink);
+  }
+  .notes h3.g { color: var(--green); }
+  .notes ul { margin: 0; padding-left: 18px; }
+  .notes li { font-size: 12.5px; line-height: 1.4; margin-bottom: 5px; }
+  .notes li b { color: var(--ink); }
+
+  .notepad {
+    margin-top: 8px;
+    border: 1px solid var(--line-soft);
+    border-radius: 8px;
+    background:
+      repeating-linear-gradient(var(--paper), var(--paper) 27px, var(--line-soft) 27px, var(--line-soft) 28px);
+    min-height: 112px;
+    width: 100%;
+    padding: 4px 12px;
+    font-family: 'Barlow', sans-serif;
+    font-size: 14px;
+    line-height: 28px;
+    color: var(--ink);
+    resize: vertical;
+  }
+  .notepad:focus { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .tagline {
+    text-align: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 9.5px;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-top: 22px;
+    line-height: 1.5;
+  }
+
+  @media (max-width: 360px) {
+    .cards { grid-template-columns: 1fr; }
+    .weeks { gap: 4px; }
+    .wk input { font-size: 12px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { transition: none !important; }
+  }
+
+  /* ---------- Print: each panel on its own page ---------- */
+  @media print {
+    body { background: #fff; }
+    .app { box-shadow: none; max-width: none; }
+    .topbar { position: static; border-bottom: 3px solid #000; }
+    .tabs { display: none; }
+    .panel[hidden] { display: block !important; }
+    .panel { page-break-after: always; padding: 0 0 20px; }
+    .ex, .day, .card { break-inside: avoid; }
+    .wk input, .notepad { background: #fff !important; }
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ============ TOP BAR ============ -->
+  <header class="topbar">
+    <div class="brand">
+      <h1 id="brand-title">Home Dumbbell<br><span>Strength Log</span></h1>
+      <div class="stamp" id="brand-stamp">
+        Alt A / B / A<br>2–3× per week<br>~25–30 min
+      </div>
+    </div>
+    <div class="tabs" role="tablist" aria-label="Sections">
+      <button class="tab strength" id="tab-strength" role="tab" aria-controls="panel-strength" aria-selected="true">
+        <span class="dot"></span>Strength
+      </button>
+      <button class="tab meals" id="tab-meals" role="tab" aria-controls="panel-meals" aria-selected="false">
+        <span class="dot"></span>Meals
+      </button>
+    </div>
+  </header>
+
+  <!-- ============ PANEL: STRENGTH ============ -->
+  <section class="panel" id="panel-strength" role="tabpanel" aria-labelledby="tab-strength">
+
+    <p class="lede">Alternate <b>A / B / A</b> · <b>2–3×</b> a week · rest ~1 min between sets. Type the weight you used in each week's box — it saves on this device.</p>
+
+    <div class="sec-label">Ground rules</div>
+    <div class="cards">
+      <div class="card">
+        <div class="k">Warm up</div>
+        <div class="v">5 min to get warm, then light reps of move #1.</div>
+      </div>
+      <div class="card">
+        <div class="k">2 in reserve</div>
+        <div class="v">Stop each set with ~2 clean reps left.</div>
+      </div>
+      <div class="card">
+        <div class="k">Progress</div>
+        <div class="v">Hit top reps easy? Add ~5 lb or a set.</div>
+      </div>
+      <div class="card">
+        <div class="k">Rough night</div>
+        <div class="v">Cut to 2 sets &amp; less weight — or just walk.</div>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <button class="btn-clear" id="clear-log" type="button">Clear all weights</button>
+    </div>
+
+    <!-- WORKOUT A -->
+    <div class="block-head">
+      <div class="badge">A</div>
+      <h2>Workout A</h2>
+    </div>
+    <p class="hint">Tap a week box and note the weight you used.</p>
+    <div id="workout-a"></div>
+
+    <!-- WORKOUT B -->
+    <div class="block-head">
+      <div class="badge outline">B</div>
+      <h2>Workout B</h2>
+    </div>
+    <p class="hint">Tap a week box and note the weight you used.</p>
+    <div id="workout-b"></div>
+
+    <div class="notes">
+      <h3>Keep it safe</h3>
+      <ul>
+        <li>Never train through sharp pain — dull effort is fine, sharp is a stop sign.</li>
+        <li><b>Form over weight.</b> Add load only once the movement is clean.</li>
+        <li>No heavy lifting within ~2 hours of bed — it can keep you wired.</li>
+        <li>Two consistent sessions beat three-then-burnout.</li>
+      </ul>
+      <h3>Notes</h3>
+      <textarea class="notepad" id="notes-strength" placeholder="Scribble how it felt, tweaks, aches to watch…"></textarea>
+    </div>
+
+    <p class="tagline">Good most days &gt; perfect never</p>
+  </section>
+
+  <!-- ============ PANEL: MEALS ============ -->
+  <section class="panel" id="panel-meals" role="tabpanel" aria-labelledby="tab-meals" hidden>
+
+    <p class="lede">Target <b>≈1,750–1,850 cal</b> · protein <b>130–150 g / day</b> · a gentle fat-loss deficit. Numbers are approximate and rounded.</p>
+
+    <div class="sec-label">Daily targets</div>
+    <div class="cards">
+      <div class="card green">
+        <div class="k">Take daily</div>
+        <div class="v">B12 + vitamin D3 (algae). Ask your doctor for a blood panel.</div>
+      </div>
+      <div class="card">
+        <div class="k">Watch the fats</div>
+        <div class="v">Measure oil, nut butter &amp; avocado — easy to overshoot.</div>
+      </div>
+      <div class="card">
+        <div class="k">Prep once</div>
+        <div class="v">Batch lentils + a tray of tofu / tempeh on the weekend.</div>
+      </div>
+      <div class="card">
+        <div class="k">Still hungry?</div>
+        <div class="v">Add volume with veg, not oil — a bigger salad costs little.</div>
+      </div>
+    </div>
+
+    <div class="sec-label">The week</div>
+    <div id="week-days"></div>
+
+    <div class="notes">
+      <h3>How to flex it</h3>
+      <ul>
+        <li><b>Swap any anchor:</b> tofu ⇄ tempeh ⇄ seitan ⇄ edamame ⇄ lentils. Keep the protein number roughly the same.</li>
+        <li><b>Groggy / no-cook morning:</b> lean on a protein shake or overnight oats made the night before.</li>
+      </ul>
+      <h3 class="g">Also keep an eye on</h3>
+      <ul>
+        <li><b>Omega-3:</b> an algae-oil capsule covers EPA/DHA.</li>
+        <li><b>Iron:</b> pair lentils / spinach with vitamin C (peppers, citrus) to absorb it.</li>
+        <li><b>Calcium, zinc, iodine:</b> fortified soy milk, seeds, and iodized salt fill the gaps.</li>
+      </ul>
+    </div>
+
+    <p class="tagline">Aim for the daily range, not a perfect match</p>
+  </section>
+
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ---- data ---- */
+  var workoutA = [
+    ["Goblet Squat", "Dumbbell at chest, sit between knees, heels down", "3 × 10"],
+    ["One-Arm Row", "Brace on chair / thigh · pull to hip · per arm", "3 × 10"],
+    ["Floor Press", "On back, elbows rest on floor between reps", "3 × 10"],
+    ["Romanian Deadlift", "Soft knees, hips back, weights close — go light", "2 × 12"],
+    ["Farmer's Carry", "Heavy at sides, tall & braced · ~30 sec walk", "3 × 30s"]
+  ];
+  var workoutB = [
+    ["Reverse Lunge", "Step back, lower gently, drive up · per leg", "3 × 8"],
+    ["Overhead Press", "Shoulders to overhead, don't arch lower back", "3 × 10"],
+    ["Bent-Over Row", "Both dumbbells, hinge, row to hips, squeeze", "3 × 10"],
+    ["Romanian Deadlift", "Soft knees, hips back, weights close — go light", "2 × 12"],
+    ["Plank", "Or dead bug if your lower back prefers · ~30 sec", "3 × 30s"]
+  ];
+
+  var days = [
+    ["1","Mon","1,720","130",[["Breakfast","Berry protein smoothie","410 cal","37g P"],["Lunch","Tempeh rice bowl + edamame","520 cal","35g P"],["Snack","Edamame, 1 cup","190 cal","17g P"],["Dinner","Tofu veg stir-fry + rice","600 cal","41g P"]]],
+    ["2","Tue","1,810","130",[["Breakfast","Tofu scramble + toast","430 cal","32g P"],["Lunch","Lentil + edamame salad","540 cal","36g P"],["Snack","Protein soy-yogurt bowl","280 cal","28g P"],["Dinner","Red-lentil pasta + white beans","560 cal","34g P"]]],
+    ["3","Wed","1,700","130",[["Breakfast","Protein overnight oats","440 cal","39g P"],["Lunch","Seitan hummus wrap","490 cal","36g P"],["Snack","Edamame, 1 cup","190 cal","17g P"],["Dinner","Tempeh chili + rice","580 cal","38g P"]]],
+    ["4","Thu","1,780","131",[["Breakfast","Tofu scramble burrito","470 cal","33g P"],["Lunch","Leftover chili + edamame","500 cal","35g P"],["Snack","Protein shake","250 cal","30g P"],["Dinner","Baked tofu, potatoes, broccoli","560 cal","33g P"]]],
+    ["5","Fri","1,780","131",[["Breakfast","Protein soy-yogurt + granola","450 cal","38g P"],["Lunch","Chickpea-tofu salad sandwich","540 cal","36g P"],["Snack","Edamame, 1 cup","190 cal","17g P"],["Dinner","Lentil-TVP bolognese + pasta","600 cal","40g P"]]],
+    ["6","Sat","1,810","135",[["Breakfast","Berry protein smoothie","410 cal","37g P"],["Lunch","Baked tofu quinoa bowl","560 cal","40g P"],["Snack","Soy yogurt + berries + hemp","240 cal","20g P"],["Dinner","Tempeh + bean tacos","600 cal","38g P"]]],
+    ["7","Sun","1,800","138",[["Breakfast","Tofu scramble + toast","430 cal","32g P"],["Lunch","Lentil-quinoa salad + edamame","540 cal","34g P"],["Snack","Protein shake","250 cal","30g P"],["Dinner","Seitan veg stir-fry + rice","580 cal","42g P"]]]
+  ];
+
+  /* ---- tiny helpers ---- */
+  function el(tag, cls, html) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (html != null) e.innerHTML = html;
+    return e;
+  }
+  function esc(s) {
+    return String(s).replace(/[&<>"]/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+    });
+  }
+
+  /* graceful storage: works when the file is opened normally,
+     silently no-ops if storage is blocked. */
+  var store = (function () {
+    try {
+      var t = "__hb__";
+      window.localStorage.setItem(t, "1");
+      window.localStorage.removeItem(t);
+      return window.localStorage;
+    } catch (e) { return null; }
+  })();
+  function load(k, d) { try { var v = store && store.getItem(k); return v == null ? d : v; } catch (e) { return d; } }
+  function save(k, v) { try { if (store) store.setItem(k, v); } catch (e) {} }
+
+  /* ---- build workout cards ---- */
+  function buildWorkout(list, mount, key) {
+    var wrap = document.getElementById(mount);
+    list.forEach(function (row, i) {
+      var name = row[0], cue = row[1], pre = row[2];
+      var card = el("div", "ex");
+      var top = el("div", "ex-top");
+      top.appendChild(el("b", null, esc(name)));
+      top.appendChild(el("span", "pre", esc(pre)));
+      card.appendChild(top);
+      card.appendChild(el("span", "cue", esc(cue)));
+
+      var weeks = el("div", "weeks");
+      for (var w = 1; w <= 5; w++) {
+        var cell = el("div", "wk");
+        var id = key + "-" + i + "-" + w;
+        var lab = el("label", null, "Wk " + w);
+        lab.setAttribute("for", id);
+        var inp = document.createElement("input");
+        inp.type = "text";
+        inp.id = id;
+        inp.inputMode = "text";
+        inp.autocomplete = "off";
+        inp.placeholder = "—";
+        inp.setAttribute("aria-label", name + " week " + w + " weight");
+        inp.value = load("wt:" + id, "");
+        inp.addEventListener("input", (function (storeId) {
+          return function (ev) { save("wt:" + storeId, ev.target.value); };
+        })(id));
+        cell.appendChild(lab);
+        cell.appendChild(inp);
+        weeks.appendChild(cell);
+      }
+      card.appendChild(weeks);
+      wrap.appendChild(card);
+    });
+  }
+  buildWorkout(workoutA, "workout-a", "A");
+  buildWorkout(workoutB, "workout-b", "B");
+
+  /* ---- build day cards ---- */
+  (function buildDays() {
+    var wrap = document.getElementById("week-days");
+    days.forEach(function (d) {
+      var num = d[0], lbl = d[1], cal = d[2], pro = d[3], meals = d[4];
+      var day = el("div", "day");
+      var head = el("div", "day-head");
+      head.appendChild(el("div", "who",
+        '<span class="num">' + num + '</span><span class="lbl">' + lbl + '</span>'));
+      head.appendChild(el("div", "tot",
+        '<span class="cal">' + cal + '</span> <span class="u">cal</span> · ' +
+        '<span class="pro">' + pro + 'g</span> <span class="u">protein</span>'));
+      day.appendChild(head);
+
+      var ul = el("ul", "meals");
+      meals.forEach(function (m) {
+        var li = el("li");
+        li.appendChild(el("span", "slot", esc(m[0])));
+        li.appendChild(el("span", "food",
+          esc(m[1]) + '<span class="macro">' + esc(m[2]) + ' · <b>' + esc(m[3]) + '</b></span>'));
+        ul.appendChild(li);
+      });
+      day.appendChild(ul);
+      wrap.appendChild(day);
+    });
+  })();
+
+  /* ---- notes ---- */
+  var notes = document.getElementById("notes-strength");
+  notes.value = load("notes", "");
+  notes.addEventListener("input", function () { save("notes", notes.value); });
+
+  /* ---- clear weights ---- */
+  document.getElementById("clear-log").addEventListener("click", function () {
+    var inputs = document.querySelectorAll("#panel-strength .wk input");
+    inputs.forEach(function (inp) { inp.value = ""; save("wt:" + inp.id, ""); });
+  });
+
+  /* ---- tab switching ---- */
+  var tabStrength = document.getElementById("tab-strength");
+  var tabMeals = document.getElementById("tab-meals");
+  var panelStrength = document.getElementById("panel-strength");
+  var panelMeals = document.getElementById("panel-meals");
+  var titleEl = document.getElementById("brand-title");
+  var stampEl = document.getElementById("brand-stamp");
+
+  var meta = {
+    strength: {
+      title: 'Home Dumbbell<br><span>Strength Log</span>',
+      stamp: 'Alt A / B / A<br>2–3× per week<br>~25–30 min'
+    },
+    meals: {
+      title: 'High-Protein<br><span>Vegan Week</span>',
+      stamp: '≈1,750–1,850 cal<br>130–150 g protein<br>Fat-loss deficit'
+    }
+  };
+
+  function show(which) {
+    var isStrength = which === "strength";
+    tabStrength.setAttribute("aria-selected", isStrength);
+    tabMeals.setAttribute("aria-selected", !isStrength);
+    panelStrength.hidden = !isStrength;
+    panelMeals.hidden = isStrength;
+    titleEl.innerHTML = meta[which].title;
+    stampEl.innerHTML = meta[which].stamp;
+    save("tab", which);
+    if (window.scrollY > 0) window.scrollTo({ top: 0, behavior: "auto" });
+  }
+
+  tabStrength.addEventListener("click", function () { show("strength"); });
+  tabMeals.addEventListener("click", function () { show("meals"); });
+
+  show(load("tab", "strength"));
+})();
+</script>
+</body>
+</html>
