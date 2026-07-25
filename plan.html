@@ -233,7 +233,54 @@
     color: var(--muted);
     font-size: 11.5px;
     line-height: 1.3;
-    margin: 3px 0 9px;
+    margin: 3px 0 0;
+  }
+
+  /* exercise layout: animated figure + info side by side */
+  .ex-body { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 10px; }
+  .ex-info { flex: 1; min-width: 0; }
+  .ex-media {
+    flex: none;
+    width: 96px;
+  }
+
+  /* ---------- Animated exercise figures ("GIFs") ---------- */
+  .exfig {
+    display: block;
+    width: 100%;
+    height: auto;
+    background: linear-gradient(#f6f8fc, #eef1f7);
+    border: 1px solid var(--line-soft);
+    border-radius: 9px;
+  }
+  .exfig line, .exfig polyline, .exfig path {
+    fill: none;
+    stroke: #2b2f3a;
+    stroke-width: 7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .exfig .head { fill: #2b2f3a; stroke: none; }
+  .exfig .plate { fill: var(--accent); stroke: none; }
+  .exfig .floor { stroke: var(--line); stroke-width: 4; }
+  .exfig .mv { transform-box: fill-box; }
+
+  @keyframes ex-squat-body { 0%,100% { transform: translateY(0); }   50% { transform: translateY(10px); } }
+  @keyframes ex-squat-legs { 0%,100% { transform: scaleY(1); }       50% { transform: scaleY(.8); } }
+  @keyframes ex-row-arm    { 0%,100% { transform: scaleY(1); }       50% { transform: scaleY(.5); } }
+  @keyframes ex-floorpress { 0%,100% { transform: scaleY(.68); }     50% { transform: scaleY(1); } }
+  @keyframes ex-hinge      { 0%,100% { transform: rotate(0); }       50% { transform: rotate(50deg); } }
+  @keyframes ex-bob        { 0%,100% { transform: translateY(0); }   50% { transform: translateY(-3px); } }
+  @keyframes ex-step-l     { 0%,100% { transform: rotate(3deg); }    50% { transform: rotate(-6deg); } }
+  @keyframes ex-step-r     { 0%,100% { transform: rotate(-3deg); }   50% { transform: rotate(6deg); } }
+  @keyframes ex-lunge-body { 0%,100% { transform: translateY(0); }   50% { transform: translateY(10px); } }
+  @keyframes ex-lunge-legs { 0%,100% { transform: scaleY(1); }       50% { transform: scaleY(.82); } }
+  @keyframes ex-ohp        { 0%,100% { transform: scaleY(.52); }     50% { transform: scaleY(1); } }
+  @keyframes ex-bor-arm    { 0%,100% { transform: translateY(0); }   50% { transform: translateY(-7px); } }
+  @keyframes ex-plank      { 0%,100% { transform: translateY(0); }   50% { transform: translateY(2px); } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .exfig .mv { animation: none !important; }
   }
 
   /* week tracker inputs */
@@ -302,6 +349,37 @@
     cursor: pointer;
   }
   .btn-clear:active { background: var(--bg); }
+
+  /* ---------- Meal plan selector ---------- */
+  .plan-pills {
+    display: flex;
+    gap: 7px;
+    flex-wrap: wrap;
+    margin: 2px 0 14px;
+  }
+  .plan-pill {
+    appearance: none;
+    cursor: pointer;
+    border: 1px solid var(--line);
+    background: var(--paper);
+    color: var(--muted);
+    border-radius: 999px;
+    padding: 7px 13px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-size: 12.5px;
+    line-height: 1;
+    transition: color .15s ease, border-color .15s ease, background .15s ease;
+  }
+  .plan-pill:hover { border-color: var(--green); }
+  .plan-pill[aria-selected="true"] {
+    background: var(--green-soft);
+    border-color: var(--green);
+    color: var(--green);
+  }
+  .plan-pill:focus-visible { outline: 2px solid var(--green); outline-offset: 1px; }
 
   /* ---------- Meal day cards ---------- */
   .day {
@@ -532,27 +610,12 @@
   <!-- ============ PANEL: MEALS ============ -->
   <section class="panel" id="panel-meals" role="tabpanel" aria-labelledby="tab-meals" hidden>
 
-    <p class="lede">Target <b>≈1,750–1,850 cal</b> · protein <b>130–150 g / day</b> · a gentle fat-loss deficit. Numbers are approximate and rounded.</p>
+    <div class="plan-pills" id="plan-pills" role="tablist" aria-label="Meal plan"></div>
+
+    <p class="lede" id="meal-lede"></p>
 
     <div class="sec-label">Daily targets</div>
-    <div class="cards">
-      <div class="card green">
-        <div class="k">Take daily</div>
-        <div class="v">B12 + vitamin D3 (algae). Ask your doctor for a blood panel.</div>
-      </div>
-      <div class="card">
-        <div class="k">Watch the fats</div>
-        <div class="v">Measure oil, nut butter &amp; avocado — easy to overshoot.</div>
-      </div>
-      <div class="card">
-        <div class="k">Prep once</div>
-        <div class="v">Batch lentils + a tray of tofu / tempeh on the weekend.</div>
-      </div>
-      <div class="card">
-        <div class="k">Still hungry?</div>
-        <div class="v">Add volume with veg, not oil — a bigger salad costs little.</div>
-      </div>
-    </div>
+    <div class="cards" id="meal-targets"></div>
 
     <div class="sec-label">The week</div>
     <div id="week-days"></div>
@@ -582,28 +645,205 @@
 
   /* ---- data ---- */
   var workoutA = [
-    ["Goblet Squat", "Dumbbell at chest, sit between knees, heels down", "3 × 10"],
-    ["One-Arm Row", "Brace on chair / thigh · pull to hip · per arm", "3 × 10"],
-    ["Floor Press", "On back, elbows rest on floor between reps", "3 × 10"],
-    ["Romanian Deadlift", "Soft knees, hips back, weights close — go light", "2 × 12"],
-    ["Farmer's Carry", "Heavy at sides, tall & braced · ~30 sec walk", "3 × 30s"]
+    ["Goblet Squat", "Dumbbell at chest, sit between knees, heels down", "3 × 10", "goblet"],
+    ["One-Arm Row", "Brace on chair / thigh · pull to hip · per arm", "3 × 10", "onearmrow"],
+    ["Floor Press", "On back, elbows rest on floor between reps", "3 × 10", "floorpress"],
+    ["Romanian Deadlift", "Soft knees, hips back, weights close — go light", "2 × 12", "rdl"],
+    ["Farmer's Carry", "Heavy at sides, tall & braced · ~30 sec walk", "3 × 30s", "carry"]
   ];
   var workoutB = [
-    ["Reverse Lunge", "Step back, lower gently, drive up · per leg", "3 × 8"],
-    ["Overhead Press", "Shoulders to overhead, don't arch lower back", "3 × 10"],
-    ["Bent-Over Row", "Both dumbbells, hinge, row to hips, squeeze", "3 × 10"],
-    ["Romanian Deadlift", "Soft knees, hips back, weights close — go light", "2 × 12"],
-    ["Plank", "Or dead bug if your lower back prefers · ~30 sec", "3 × 30s"]
+    ["Reverse Lunge", "Step back, lower gently, drive up · per leg", "3 × 8", "lunge"],
+    ["Overhead Press", "Shoulders to overhead, don't arch lower back", "3 × 10", "ohp"],
+    ["Bent-Over Row", "Both dumbbells, hinge, row to hips, squeeze", "3 × 10", "bentrow"],
+    ["Romanian Deadlift", "Soft knees, hips back, weights close — go light", "2 × 12", "rdl"],
+    ["Plank", "Or dead bug if your lower back prefers · ~30 sec", "3 × 30s", "plank"]
   ];
 
-  var days = [
-    ["1","Mon","1,720","130",[["Breakfast","Berry protein smoothie","410 cal","37g P"],["Lunch","Tempeh rice bowl + edamame","520 cal","35g P"],["Snack","Edamame, 1 cup","190 cal","17g P"],["Dinner","Tofu veg stir-fry + rice","600 cal","41g P"]]],
-    ["2","Tue","1,810","130",[["Breakfast","Tofu scramble + toast","430 cal","32g P"],["Lunch","Lentil + edamame salad","540 cal","36g P"],["Snack","Protein soy-yogurt bowl","280 cal","28g P"],["Dinner","Red-lentil pasta + white beans","560 cal","34g P"]]],
-    ["3","Wed","1,700","130",[["Breakfast","Protein overnight oats","440 cal","39g P"],["Lunch","Seitan hummus wrap","490 cal","36g P"],["Snack","Edamame, 1 cup","190 cal","17g P"],["Dinner","Tempeh chili + rice","580 cal","38g P"]]],
-    ["4","Thu","1,780","131",[["Breakfast","Tofu scramble burrito","470 cal","33g P"],["Lunch","Leftover chili + edamame","500 cal","35g P"],["Snack","Protein shake","250 cal","30g P"],["Dinner","Baked tofu, potatoes, broccoli","560 cal","33g P"]]],
-    ["5","Fri","1,780","131",[["Breakfast","Protein soy-yogurt + granola","450 cal","38g P"],["Lunch","Chickpea-tofu salad sandwich","540 cal","36g P"],["Snack","Edamame, 1 cup","190 cal","17g P"],["Dinner","Lentil-TVP bolognese + pasta","600 cal","40g P"]]],
-    ["6","Sat","1,810","135",[["Breakfast","Berry protein smoothie","410 cal","37g P"],["Lunch","Baked tofu quinoa bowl","560 cal","40g P"],["Snack","Soy yogurt + berries + hemp","240 cal","20g P"],["Dinner","Tempeh + bean tacos","600 cal","38g P"]]],
-    ["7","Sun","1,800","138",[["Breakfast","Tofu scramble + toast","430 cal","32g P"],["Lunch","Lentil-quinoa salad + edamame","540 cal","34g P"],["Snack","Protein shake","250 cal","30g P"],["Dinner","Seitan veg stir-fry + rice","580 cal","42g P"]]]
+  /* ---- animated exercise figures (self-contained looping SVG) ---- */
+  var A = "2.6s ease-in-out infinite";
+  var svgs = {
+    goblet:
+      '<svg class="exfig" viewBox="0 0 150 120" role="img" aria-label="Goblet squat demonstration">' +
+        '<line class="floor" x1="34" y1="106" x2="116" y2="106"/>' +
+        '<g class="mv" style="transform-origin:center bottom;animation:ex-squat-legs ' + A + '">' +
+          '<polyline points="75,60 64,82 63,104"/><polyline points="75,60 86,82 87,104"/>' +
+        '</g>' +
+        '<g class="mv" style="transform-origin:center bottom;animation:ex-squat-body ' + A + '">' +
+          '<circle class="head" cx="75" cy="20" r="8.5"/>' +
+          '<line x1="75" y1="28" x2="75" y2="60"/>' +
+          '<line x1="67" y1="33" x2="74" y2="47"/><line x1="83" y1="33" x2="76" y2="47"/>' +
+          '<circle class="plate" cx="75" cy="49" r="6"/>' +
+        '</g>' +
+      '</svg>',
+
+    onearmrow:
+      '<svg class="exfig" viewBox="0 0 150 120" role="img" aria-label="One-arm row demonstration">' +
+        '<line class="floor" x1="34" y1="106" x2="116" y2="106"/>' +
+        '<polyline points="58,74 47,92 47,104"/><polyline points="58,74 70,92 70,104"/>' +
+        '<line x1="58" y1="74" x2="92" y2="50"/>' +
+        '<circle class="head" cx="100" cy="45" r="8.5"/>' +
+        '<line x1="92" y1="50" x2="74" y2="76"/>' +           /* bracing arm */
+        '<g class="mv" style="transform-origin:center top;animation:ex-row-arm ' + A + '">' +
+          '<line x1="92" y1="50" x2="92" y2="78"/>' +
+          '<circle class="plate" cx="92" cy="80" r="6"/>' +
+        '</g>' +
+      '</svg>',
+
+    floorpress:
+      '<svg class="exfig" viewBox="0 0 150 120" role="img" aria-label="Floor press demonstration">' +
+        '<line class="floor" x1="20" y1="104" x2="130" y2="104"/>' +
+        '<circle class="head" cx="30" cy="92" r="8.5"/>' +
+        '<line x1="39" y1="92" x2="86" y2="92"/>' +           /* torso on floor */
+        '<polyline points="86,92 98,74 110,92"/>' +           /* bent leg */
+        '<g class="mv" style="transform-origin:center bottom;animation:ex-floorpress ' + A + '">' +
+          '<line x1="46" y1="92" x2="46" y2="62"/><line x1="54" y1="92" x2="54" y2="62"/>' +
+          '<circle class="plate" cx="46" cy="60" r="5.5"/><circle class="plate" cx="54" cy="60" r="5.5"/>' +
+        '</g>' +
+      '</svg>',
+
+    rdl:
+      '<svg class="exfig" viewBox="0 0 150 120" role="img" aria-label="Romanian deadlift demonstration">' +
+        '<line class="floor" x1="34" y1="106" x2="116" y2="106"/>' +
+        '<polyline points="75,66 69,86 68,106"/><polyline points="75,66 81,86 82,106"/>' +
+        '<g class="mv" style="transform-origin:50% 82%;animation:ex-hinge ' + A + '">' +
+          '<circle class="head" cx="75" cy="22" r="8.5"/>' +
+          '<line x1="75" y1="30" x2="75" y2="66"/>' +
+          '<line x1="75" y1="34" x2="70" y2="70"/><line x1="75" y1="34" x2="80" y2="70"/>' +
+          '<circle class="plate" cx="70" cy="72" r="5.5"/><circle class="plate" cx="80" cy="72" r="5.5"/>' +
+        '</g>' +
+      '</svg>',
+
+    carry:
+      '<svg class="exfig" viewBox="0 0 150 120" role="img" aria-label="Farmer\'s carry demonstration">' +
+        '<line class="floor" x1="34" y1="106" x2="116" y2="106"/>' +
+        '<g class="mv" style="transform-origin:center top;animation:ex-step-l ' + A + '"><line x1="75" y1="62" x2="69" y2="104"/></g>' +
+        '<g class="mv" style="transform-origin:center top;animation:ex-step-r ' + A + '"><line x1="75" y1="62" x2="81" y2="104"/></g>' +
+        '<g class="mv" style="transform-origin:center center;animation:ex-bob ' + A + '">' +
+          '<circle class="head" cx="75" cy="20" r="8.5"/>' +
+          '<line x1="75" y1="28" x2="75" y2="63"/>' +
+          '<line x1="75" y1="33" x2="61" y2="60"/><line x1="75" y1="33" x2="89" y2="60"/>' +
+          '<circle class="plate" cx="60" cy="63" r="6.5"/><circle class="plate" cx="90" cy="63" r="6.5"/>' +
+        '</g>' +
+      '</svg>',
+
+    lunge:
+      '<svg class="exfig" viewBox="0 0 150 120" role="img" aria-label="Reverse lunge demonstration">' +
+        '<line class="floor" x1="30" y1="106" x2="120" y2="106"/>' +
+        '<g class="mv" style="transform-origin:center bottom;animation:ex-lunge-legs ' + A + '">' +
+          '<polyline points="75,60 70,82 66,104"/><polyline points="75,60 86,84 94,104"/>' +
+        '</g>' +
+        '<g class="mv" style="transform-origin:center bottom;animation:ex-lunge-body ' + A + '">' +
+          '<circle class="head" cx="75" cy="20" r="8.5"/>' +
+          '<line x1="75" y1="28" x2="75" y2="60"/>' +
+          '<line x1="75" y1="33" x2="70" y2="58"/><line x1="75" y1="33" x2="80" y2="58"/>' +
+        '</g>' +
+      '</svg>',
+
+    ohp:
+      '<svg class="exfig" viewBox="0 0 150 120" role="img" aria-label="Overhead press demonstration">' +
+        '<line class="floor" x1="34" y1="106" x2="116" y2="106"/>' +
+        '<polyline points="75,62 69,84 68,104"/><polyline points="75,62 81,84 82,104"/>' +
+        '<circle class="head" cx="75" cy="24" r="8.5"/>' +
+        '<line x1="75" y1="32" x2="75" y2="62"/>' +
+        '<g class="mv" style="transform-origin:center bottom;animation:ex-ohp ' + A + '">' +
+          '<line x1="67" y1="36" x2="67" y2="14"/><line x1="83" y1="36" x2="83" y2="14"/>' +
+          '<circle class="plate" cx="67" cy="12" r="5.5"/><circle class="plate" cx="83" cy="12" r="5.5"/>' +
+        '</g>' +
+      '</svg>',
+
+    bentrow:
+      '<svg class="exfig" viewBox="0 0 150 120" role="img" aria-label="Bent-over row demonstration">' +
+        '<line class="floor" x1="34" y1="106" x2="116" y2="106"/>' +
+        '<polyline points="60,74 52,92 52,104"/><polyline points="60,74 68,92 68,104"/>' +
+        '<line x1="60" y1="74" x2="94" y2="50"/>' +
+        '<circle class="head" cx="102" cy="45" r="8.5"/>' +
+        '<g class="mv" style="transform-origin:center top;animation:ex-bor-arm ' + A + '">' +
+          '<line x1="88" y1="52" x2="85" y2="76"/><line x1="96" y1="52" x2="99" y2="76"/>' +
+          '<circle class="plate" cx="84" cy="78" r="5.5"/><circle class="plate" cx="100" cy="78" r="5.5"/>' +
+        '</g>' +
+      '</svg>',
+
+    plank:
+      '<svg class="exfig" viewBox="0 0 150 120" role="img" aria-label="Plank demonstration">' +
+        '<line class="floor" x1="24" y1="104" x2="128" y2="104"/>' +
+        '<g class="mv" style="transform-origin:center center;animation:ex-plank ' + A + '">' +
+          '<circle class="head" cx="42" cy="72" r="8"/>' +
+          '<line x1="50" y1="74" x2="116" y2="86"/>' +          /* body line */
+          '<polyline points="52,74 50,104 68,104"/>' +          /* forearm */
+          '<line x1="116" y1="86" x2="120" y2="104"/>' +        /* back leg */
+        '</g>' +
+      '</svg>'
+  };
+
+  var mealPlans = [
+    {
+      id: "cut",
+      pill: "High-protein cut",
+      title: 'High-Protein<br><span>Vegan Cut</span>',
+      stamp: '≈1,750–1,850 cal<br>130–150 g protein<br>Fat-loss deficit',
+      lede: 'Target <b>≈1,750–1,850 cal</b> · protein <b>130–150 g / day</b> · a gentle fat-loss deficit. Numbers are approximate and rounded.',
+      targets: [
+        { green: true, k: "Take daily", v: "B12 + vitamin D3 (algae). Ask your doctor for a blood panel." },
+        { k: "Watch the fats", v: "Measure oil, nut butter &amp; avocado — easy to overshoot." },
+        { k: "Prep once", v: "Batch lentils + a tray of tofu / tempeh on the weekend." },
+        { k: "Still hungry?", v: "Add volume with veg, not oil — a bigger salad costs little." }
+      ],
+      days: [
+        ["1","Mon","1,720","130",[["Breakfast","Berry protein smoothie","410 cal","37g P"],["Lunch","Tempeh rice bowl + edamame","520 cal","35g P"],["Snack","Edamame, 1 cup","190 cal","17g P"],["Dinner","Tofu veg stir-fry + rice","600 cal","41g P"]]],
+        ["2","Tue","1,810","130",[["Breakfast","Tofu scramble + toast","430 cal","32g P"],["Lunch","Lentil + edamame salad","540 cal","36g P"],["Snack","Protein soy-yogurt bowl","280 cal","28g P"],["Dinner","Red-lentil pasta + white beans","560 cal","34g P"]]],
+        ["3","Wed","1,700","130",[["Breakfast","Protein overnight oats","440 cal","39g P"],["Lunch","Seitan hummus wrap","490 cal","36g P"],["Snack","Edamame, 1 cup","190 cal","17g P"],["Dinner","Tempeh chili + rice","580 cal","38g P"]]],
+        ["4","Thu","1,780","131",[["Breakfast","Tofu scramble burrito","470 cal","33g P"],["Lunch","Leftover chili + edamame","500 cal","35g P"],["Snack","Protein shake","250 cal","30g P"],["Dinner","Baked tofu, potatoes, broccoli","560 cal","33g P"]]],
+        ["5","Fri","1,780","131",[["Breakfast","Protein soy-yogurt + granola","450 cal","38g P"],["Lunch","Chickpea-tofu salad sandwich","540 cal","36g P"],["Snack","Edamame, 1 cup","190 cal","17g P"],["Dinner","Lentil-TVP bolognese + pasta","600 cal","40g P"]]],
+        ["6","Sat","1,810","135",[["Breakfast","Berry protein smoothie","410 cal","37g P"],["Lunch","Baked tofu quinoa bowl","560 cal","40g P"],["Snack","Soy yogurt + berries + hemp","240 cal","20g P"],["Dinner","Tempeh + bean tacos","600 cal","38g P"]]],
+        ["7","Sun","1,800","138",[["Breakfast","Tofu scramble + toast","430 cal","32g P"],["Lunch","Lentil-quinoa salad + edamame","540 cal","34g P"],["Snack","Protein shake","250 cal","30g P"],["Dinner","Seitan veg stir-fry + rice","580 cal","42g P"]]]
+      ]
+    },
+
+    {
+      id: "budget",
+      pill: "Budget & simple",
+      title: 'Budget &amp; Simple<br><span>Vegan Week</span>',
+      stamp: '≈1,700–1,850 cal<br>115–125 g protein<br>Budget deficit',
+      lede: 'Same fat-loss range on cheap staples — <b>tofu, TVP, lentils, beans, oats, edamame</b>. Target <b>≈1,700–1,850 cal</b> · protein <b>115–125 g / day</b>. Protein powder is optional here.',
+      targets: [
+        { green: true, k: "Take daily", v: "B12 + vitamin D3 (algae). A blood panel is worth it." },
+        { k: "Cheap protein", v: "Tofu, TVP, dried lentils &amp; beans, frozen edamame, soy milk." },
+        { k: "Batch & freeze", v: "Big pot of chili / dal on Sunday, freeze single portions." },
+        { k: "Stretch it", v: "Bulk meals with oats, potatoes &amp; frozen veg, not oil." }
+      ],
+      days: [
+        ["1","Mon","1,800","123",[["Breakfast","Tofu scramble + toast + soy milk","480 cal","40g P"],["Lunch","Lentil + rice bowl","540 cal","26g P"],["Snack","Edamame, 1 cup","190 cal","17g P"],["Dinner","TVP bolognese + pasta","590 cal","40g P"]]],
+        ["2","Tue","1,790","124",[["Breakfast","Tofu scramble burrito","470 cal","33g P"],["Lunch","Chickpea-tofu curry + rice","560 cal","34g P"],["Snack","Edamame, 1 cup","190 cal","17g P"],["Dinner","TVP + bean chili + rice","570 cal","40g P"]]],
+        ["3","Wed","1,740","115",[["Breakfast","Tofu scramble + toast","430 cal","32g P"],["Lunch","Lentil + white-bean soup + toast","540 cal","30g P"],["Snack","Edamame, 1 cup","190 cal","17g P"],["Dinner","Baked tofu, potatoes, broccoli","580 cal","36g P"]]],
+        ["4","Thu","1,820","117",[["Breakfast","PB-banana oats + soy milk","470 cal","22g P"],["Lunch","Leftover TVP chili + rice","560 cal","38g P"],["Snack","Edamame, 1 cup","190 cal","17g P"],["Dinner","Tofu veg stir-fry + rice","600 cal","40g P"]]],
+        ["5","Fri","1,740","115",[["Breakfast","Tofu scramble + toast","430 cal","32g P"],["Lunch","Chickpea-tofu salad sandwich","540 cal","32g P"],["Snack","Edamame, 1 cup","190 cal","17g P"],["Dinner","Red-lentil pasta + peas","580 cal","34g P"]]],
+        ["6","Sat","1,800","122",[["Breakfast","Tofu scramble burrito","470 cal","33g P"],["Lunch","Baked tofu quinoa bowl","560 cal","36g P"],["Snack","Edamame, 1 cup","190 cal","17g P"],["Dinner","Tempeh + bean tacos","580 cal","36g P"]]],
+        ["7","Sun","1,750","117",[["Breakfast","Tofu scramble + toast","430 cal","32g P"],["Lunch","Lentil-quinoa salad + edamame","540 cal","30g P"],["Snack","Edamame, 1 cup","190 cal","17g P"],["Dinner","Tofu veg curry + rice","590 cal","38g P"]]]
+      ]
+    },
+
+    {
+      id: "build",
+      pill: "Higher-cal build",
+      title: 'Higher-Calorie<br><span>Vegan Build</span>',
+      stamp: '≈2,250–2,400 cal<br>150–165 g protein<br>Slight surplus',
+      lede: 'For training days &amp; adding muscle — more energy and protein. Target <b>≈2,250–2,400 cal</b> · protein <b>150–165 g / day</b>, a slight surplus. Numbers are approximate.',
+      targets: [
+        { green: true, k: "Take daily", v: "B12 + vitamin D3 (algae). A blood panel is worth it." },
+        { k: "Eat on schedule", v: "A surplus needs consistency — don't skip meals or snacks." },
+        { k: "Around training", v: "Carbs + protein in the meal before &amp; after you lift." },
+        { k: "Recover", v: "Protein at every meal, plus sleep and water do the building." }
+      ],
+      days: [
+        ["1","Mon","2,340","154",[["Breakfast","Berry protein smoothie + oats","560 cal","42g P"],["Lunch","Tempeh rice bowl + edamame","680 cal","42g P"],["Snack","Trail mix + soy yogurt","380 cal","22g P"],["Dinner","Tofu veg stir-fry + rice","720 cal","48g P"]]],
+        ["2","Tue","2,340","152",[["Breakfast","Tofu scramble + toast + avocado","600 cal","36g P"],["Lunch","Lentil + edamame grain bowl","700 cal","44g P"],["Snack","Protein soy-yogurt + granola","380 cal","30g P"],["Dinner","Red-lentil pasta + white beans","660 cal","42g P"]]],
+        ["3","Wed","2,280","156",[["Breakfast","Protein overnight oats + PB","620 cal","46g P"],["Lunch","Seitan hummus wrap + chips","640 cal","40g P"],["Snack","Edamame + soy milk","260 cal","22g P"],["Dinner","Tempeh chili + rice + avocado","760 cal","48g P"]]],
+        ["4","Thu","2,400","162",[["Breakfast","Tofu scramble burrito","640 cal","40g P"],["Lunch","Leftover chili + rice + edamame","700 cal","46g P"],["Snack","Protein shake + banana","360 cal","34g P"],["Dinner","Baked tofu, potatoes, broccoli + tahini","700 cal","42g P"]]],
+        ["5","Fri","2,200","162",[["Breakfast","Protein soy-yogurt + granola + berries","520 cal","40g P"],["Lunch","Chickpea-tofu salad sandwich + chips","680 cal","42g P"],["Snack","Protein shake","240 cal","30g P"],["Dinner","Lentil-TVP bolognese + pasta","760 cal","50g P"]]],
+        ["6","Sat","2,380","158",[["Breakfast","Berry protein smoothie + PB oats","620 cal","44g P"],["Lunch","Baked tofu quinoa bowl + avocado","720 cal","46g P"],["Snack","Soy yogurt + berries + hemp","320 cal","24g P"],["Dinner","Tempeh + bean tacos + guac","720 cal","44g P"]]],
+        ["7","Sun","2,380","166",[["Breakfast","Tofu scramble + toast + avocado","600 cal","36g P"],["Lunch","Lentil-quinoa salad + edamame","700 cal","44g P"],["Snack","Protein shake + banana","360 cal","34g P"],["Dinner","Seitan veg stir-fry + rice","720 cal","52g P"]]]
+      ]
+    }
   ];
 
   /* ---- tiny helpers ---- */
@@ -636,13 +876,20 @@
   function buildWorkout(list, mount, key) {
     var wrap = document.getElementById(mount);
     list.forEach(function (row, i) {
-      var name = row[0], cue = row[1], pre = row[2];
+      var name = row[0], cue = row[1], pre = row[2], fig = row[3];
       var card = el("div", "ex");
+
+      var body = el("div", "ex-body");
+      var media = el("div", "ex-media", svgs[fig] || "");
+      var info = el("div", "ex-info");
       var top = el("div", "ex-top");
       top.appendChild(el("b", null, esc(name)));
       top.appendChild(el("span", "pre", esc(pre)));
-      card.appendChild(top);
-      card.appendChild(el("span", "cue", esc(cue)));
+      info.appendChild(top);
+      info.appendChild(el("span", "cue", esc(cue)));
+      body.appendChild(media);
+      body.appendChild(info);
+      card.appendChild(body);
 
       var weeks = el("div", "weeks");
       for (var w = 1; w <= 5; w++) {
@@ -672,10 +919,33 @@
   buildWorkout(workoutA, "workout-a", "A");
   buildWorkout(workoutB, "workout-b", "B");
 
-  /* ---- build day cards ---- */
-  (function buildDays() {
-    var wrap = document.getElementById("week-days");
-    days.forEach(function (d) {
+  /* ---- meal plan rendering ---- */
+  var ledeEl = document.getElementById("meal-lede");
+  var targetsEl = document.getElementById("meal-targets");
+  var weekEl = document.getElementById("week-days");
+  var pillsEl = document.getElementById("plan-pills");
+  var panelMeals = document.getElementById("panel-meals");
+  var stampEl = document.getElementById("brand-stamp");
+
+  function planIndexById(id) {
+    for (var i = 0; i < mealPlans.length; i++) { if (mealPlans[i].id === id) return i; }
+    return 0;
+  }
+  var currentPlan = planIndexById(load("mealplan", "cut"));
+
+  function renderTargets(plan) {
+    targetsEl.innerHTML = "";
+    plan.targets.forEach(function (t) {
+      var card = el("div", "card" + (t.green ? " green" : ""));
+      card.appendChild(el("div", "k", t.k));
+      card.appendChild(el("div", "v", t.v));
+      targetsEl.appendChild(card);
+    });
+  }
+
+  function renderDays(plan) {
+    weekEl.innerHTML = "";
+    plan.days.forEach(function (d) {
       var num = d[0], lbl = d[1], cal = d[2], pro = d[3], meals = d[4];
       var day = el("div", "day");
       var head = el("div", "day-head");
@@ -695,9 +965,34 @@
         ul.appendChild(li);
       });
       day.appendChild(ul);
-      wrap.appendChild(day);
+      weekEl.appendChild(day);
     });
-  })();
+  }
+
+  function renderPlan(idx) {
+    currentPlan = idx;
+    var plan = mealPlans[idx];
+    ledeEl.innerHTML = plan.lede;
+    renderTargets(plan);
+    renderDays(plan);
+    var buttons = pillsEl.querySelectorAll(".plan-pill");
+    buttons.forEach(function (b, i) { b.setAttribute("aria-selected", i === idx); });
+    save("mealplan", plan.id);
+    if (!panelMeals.hidden) { stampEl.innerHTML = plan.stamp; }
+  }
+
+  mealPlans.forEach(function (plan, i) {
+    var b = el("button", "plan-pill", esc(plan.pill));
+    b.type = "button";
+    b.setAttribute("role", "tab");
+    b.setAttribute("aria-selected", i === currentPlan);
+    b.addEventListener("click", function () {
+      renderPlan(i);
+      pillsEl.scrollIntoView({ block: "nearest" });
+    });
+    pillsEl.appendChild(b);
+  });
+  renderPlan(currentPlan);
 
   /* ---- notes ---- */
   var notes = document.getElementById("notes-strength");
@@ -714,19 +1009,11 @@
   var tabStrength = document.getElementById("tab-strength");
   var tabMeals = document.getElementById("tab-meals");
   var panelStrength = document.getElementById("panel-strength");
-  var panelMeals = document.getElementById("panel-meals");
   var titleEl = document.getElementById("brand-title");
-  var stampEl = document.getElementById("brand-stamp");
 
-  var meta = {
-    strength: {
-      title: 'Home Dumbbell<br><span>Strength Log</span>',
-      stamp: 'Alt A / B / A<br>2–3× per week<br>~25–30 min'
-    },
-    meals: {
-      title: 'High-Protein<br><span>Vegan Week</span>',
-      stamp: '≈1,750–1,850 cal<br>130–150 g protein<br>Fat-loss deficit'
-    }
+  var strengthMeta = {
+    title: 'Home Dumbbell<br><span>Strength Log</span>',
+    stamp: 'Alt A / B / A<br>2–3× per week<br>~25–30 min'
   };
 
   function show(which) {
@@ -735,8 +1022,13 @@
     tabMeals.setAttribute("aria-selected", !isStrength);
     panelStrength.hidden = !isStrength;
     panelMeals.hidden = isStrength;
-    titleEl.innerHTML = meta[which].title;
-    stampEl.innerHTML = meta[which].stamp;
+    if (isStrength) {
+      titleEl.innerHTML = strengthMeta.title;
+      stampEl.innerHTML = strengthMeta.stamp;
+    } else {
+      titleEl.innerHTML = mealPlans[currentPlan].title;
+      stampEl.innerHTML = mealPlans[currentPlan].stamp;
+    }
     save("tab", which);
     if (window.scrollY > 0) window.scrollTo({ top: 0, behavior: "auto" });
   }
