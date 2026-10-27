@@ -3,36 +3,43 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;800&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
-/* Layout: a single calm column — intro, records lookup, then a one-question-at-a-time form card that turns into a result report */
+/* Layout: a single calm column — language switch, intro, records lookup, then a one-question-at-a-time form card that turns into a result report */
 :root{
-  --bg:#f3f5f8; --surface:#ffffff; --sunk:#e9edf2; --fg:#18202b; --muted:#556172; --line:#d3d9e2;
+  --bg:#f3f5f8; --surface:#ffffff; --sunk:#e9edf2; --fg:#18202b; --muted:#556172; --line:#d3d9e2; --control:#7a8596;
   --accent:#1d4f7a; --accent-fg:#ffffff; --accent-soft:#e1ebf4;
-  --ar:#2b7a4b; --ar-bg:#e2f1e8; --at:#246a92; --at-bg:#e0edf5; --pr:#9a5b06; --pr-bg:#f7ead3;
+  --ar:#25703f; --ar-bg:#e2f1e8; --at:#246a92; --at-bg:#e0edf5; --pr:#8c5205; --pr-bg:#f7ead3;
   --pt:#835426; --pt-bg:#f1e5d8; --ne:#ab3434; --ne-bg:#f7e1e1; --pend:#5f6672; --pend-bg:#e8eaee;
   --display:"Source Serif 4",Georgia,"Times New Roman",serif;
   --body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#11151b; --surface:#1a2029; --sunk:#151a22; --fg:#e4e8ee; --muted:#9ba6b6; --line:#2d3644;
+  --bg:#11151b; --surface:#1a2029; --sunk:#151a22; --fg:#e4e8ee; --muted:#9ba6b6; --line:#2d3644; --control:#76839a;
   --accent:#86b6e3; --accent-fg:#0d1824; --accent-soft:#1d2c3c;
   --ar:#69c591; --ar-bg:#163023; --at:#74b7df; --at-bg:#152a38; --pr:#e4a64e; --pr-bg:#33260f;
   --pt:#d39f6e; --pt-bg:#2f2216; --ne:#ea7a7a; --ne-bg:#361919; --pend:#a5abb5; --pend-bg:#23272e; color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#11151b; --surface:#1a2029; --sunk:#151a22; --fg:#e4e8ee; --muted:#9ba6b6; --line:#2d3644;
+  --bg:#11151b; --surface:#1a2029; --sunk:#151a22; --fg:#e4e8ee; --muted:#9ba6b6; --line:#2d3644; --control:#76839a;
   --accent:#86b6e3; --accent-fg:#0d1824; --accent-soft:#1d2c3c;
   --ar:#69c591; --ar-bg:#163023; --at:#74b7df; --at-bg:#152a38; --pr:#e4a64e; --pr-bg:#33260f;
   --pt:#d39f6e; --pt-bg:#2f2216; --ne:#ea7a7a; --ne-bg:#361919; --pend:#a5abb5; --pend-bg:#23272e; color-scheme:dark}
 *{box-sizing:border-box}
+:root[lang="es"] [data-l="en"], :root:not([lang="es"]) [data-l="es"]{display:none!important}
 body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.6}
-.wrap{max-width:760px;margin:0 auto;padding-block:40px 72px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:44px}
+.wrap-main{display:flex;flex-direction:column;gap:44px}
+.wrap{max-width:760px;margin:0 auto;padding-block:24px 72px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:44px}
 a{color:var(--accent)}
 p{margin:0}
 h1,h2,h3{margin:0;text-wrap:balance}
 h1{font-family:var(--display);font-weight:700;font-size:clamp(32px,6vw,46px);line-height:1.1;letter-spacing:-.01em}
 h2{font-family:var(--display);font-weight:700;font-size:26px;line-height:1.2}
 h3{font-size:16px;font-weight:600}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
 .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.langsw{display:inline-flex;border:1.5px solid var(--control);border-radius:999px;padding:3px;background:var(--surface);gap:2px}
+.langsw button{font:inherit;font-size:14px;font-weight:600;border:0;background:transparent;color:var(--muted);padding:6px 14px;border-radius:999px;cursor:pointer}
+.langsw button[aria-pressed="true"]{background:var(--accent);color:var(--accent-fg)}
+.langsw button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 .intro{display:flex;flex-direction:column;gap:16px}
 .intro .lede{font-size:18px;color:var(--fg);max-width:62ch}
 .intro .sub{color:var(--muted);max-width:62ch}
@@ -55,7 +62,7 @@ fieldset{border:0;margin:0;padding:0;display:flex;flex-direction:column;gap:14px
 legend{font-family:var(--display);font-weight:700;font-size:22px;line-height:1.3;padding:0;margin-bottom:4px}
 .help{color:var(--muted);font-size:15px;max-width:62ch}
 .opts{display:flex;flex-direction:column;gap:10px}
-.opt{display:flex;gap:12px;align-items:flex-start;border:1.5px solid var(--line);border-radius:8px;padding:12px 14px;cursor:pointer;background:var(--surface)}
+.opt{display:flex;gap:12px;align-items:flex-start;border:1.5px solid var(--control);border-radius:8px;padding:12px 14px;cursor:pointer;background:var(--surface)}
 .opt:hover{border-color:var(--accent)}
 .opt:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
 .opt input{margin-top:5px;accent-color:var(--accent);width:18px;height:18px;flex:none}
@@ -63,7 +70,7 @@ legend{font-family:var(--display);font-weight:700;font-size:22px;line-height:1.3
 .opt small{color:var(--muted);font-size:14px}
 .field{display:flex;flex-direction:column;gap:6px}
 .field label{font-weight:600}
-.field input[type=date]{font:inherit;padding:10px 12px;border:1.5px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg);max-width:260px}
+.field input[type=date]{font:inherit;padding:10px 12px;border:1.5px solid var(--control);border-radius:8px;background:var(--surface);color:var(--fg);max-width:260px}
 .field .fhelp{font-size:14px;color:var(--muted)}
 .err{color:var(--ne);font-weight:600;font-size:15px}
 details.list{border:1px solid var(--line);border-radius:8px;padding:10px 14px;background:var(--sunk)}
@@ -76,7 +83,12 @@ code{font-family:var(--mono);font-size:.9em}
 .trail b{color:var(--fg);font-weight:600}
 .result{display:flex;flex-direction:column;gap:18px}
 .badge{align-self:flex-start;font-size:13px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:5px 12px;border-radius:999px;color:var(--c);background:var(--cbg);border:1px solid var(--c)}
-.result h2{font-size:28px}
+.result .rh{font-family:var(--display);font-weight:700;font-size:28px;line-height:1.2}
+.toolh{font-weight:500;line-height:1.4}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.field input[aria-invalid="true"]{border-color:var(--ne);border-width:2px}
+legend:focus,.rh:focus{outline:none}
+legend:focus-visible,.rh:focus-visible{outline:3px solid var(--accent);outline-offset:4px}
 .when{border-left:5px solid var(--c);background:var(--cbg);border-radius:0 8px 8px 0;padding:14px 18px;display:flex;flex-direction:column;gap:2px}
 .when .lbl{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--c)}
 .when .date{font-family:var(--display);font-weight:700;font-size:26px;font-variant-numeric:tabular-nums}
@@ -90,25 +102,41 @@ code{font-family:var(--mono);font-size:.9em}
 </style>
 
 <div class="wrap">
-  <header class="intro">
-    <div class="eyebrow">Virginia · Code § 19.2-392.5 and following</div>
-    <h1>Can My Virginia Record Be Sealed?</h1>
-    <p class="lede">Virginia now seals many old criminal records. Some are sealed automatically. Others are sealed only if you ask a court. This guide walks you through one record at a time and tells you which applies, and when.</p>
-    <p class="sub">Answer a few questions using your court records. At the end you'll see whether this record will be sealed automatically, whether you can file a petition, the date that applies, and what to do next. Nothing you enter leaves your browser.</p>
-    <div class="btnrow"><a class="btn btn-primary" href="#tool" id="startHere">Start here</a><a class="btn btn-ghost" href="#records">Find your records first</a></div>
+  <header class="topbar">
+    <div class="eyebrow"><span data-l="en">Virginia · Code § 19.2-392.5 and following</span><span data-l="es">Virginia · Código § 19.2-392.5 y siguientes</span></div>
+    <div class="langsw" role="group" aria-label="Language / Idioma">
+      <button type="button" id="lang-en" lang="en" aria-pressed="true">English</button>
+      <button type="button" id="lang-es" lang="es" aria-pressed="false">Español</button>
+    </div>
   </header>
 
+  <main id="main" class="wrap-main">
+  <section class="intro" aria-labelledby="pagetitle">
+    <h1 id="pagetitle"><span data-l="en">Can My Virginia Record Be Sealed?</span><span data-l="es">¿Se puede sellar mi récord en Virginia?</span></h1>
+    <p class="lede" data-l="en">Virginia now seals many old criminal records. Some are sealed automatically. Others are sealed only if you ask a court. This guide walks you through one record at a time and tells you which applies, and when.</p>
+    <p class="lede" data-l="es">Virginia ahora sella muchos antecedentes penales antiguos. Algunos se sellan automáticamente. Otros solo se sellan si usted lo pide a un tribunal. Esta guía revisa un récord a la vez y le dice cuál de los dos casos aplica, y cuándo.</p>
+    <p class="sub" data-l="en">Answer a few questions using your court records. At the end you'll see whether this record will be sealed automatically, whether you can file a petition, the date that applies, and what to do next. Nothing you enter leaves your browser.</p>
+    <p class="sub" data-l="es">Responda algunas preguntas usando sus documentos judiciales. Al final verá si este récord se sellará automáticamente, si puede presentar una petición, la fecha que aplica y qué hacer después. Nada de lo que ingrese sale de su navegador.</p>
+    <div class="btnrow"><a class="btn btn-primary" href="#tool" id="startHere"><span data-l="en">Start here</span><span data-l="es">Empiece aquí</span></a><a class="btn btn-ghost" href="#records"><span data-l="en">Find your records first</span><span data-l="es">Primero busque sus récords</span></a></div>
+  </section>
+
   <section class="lookup" id="records">
-    <h2>Look up your court records</h2>
-    <p>You'll get the most accurate answer with your court records in front of you. Virginia's Online Case Information System (OCIS) lets you search court cases across the state by name, for free.</p>
-    <ol>
-      <li>Open <a href="https://eapps.courts.state.va.us/ocis/landing" target="_blank" rel="noopener">OCIS at eapps.courts.state.va.us/ocis/landing</a> and accept the terms.</li>
+    <h2><span data-l="en">Look up your court records</span><span data-l="es">Busque sus récords judiciales</span></h2>
+    <p data-l="en">You'll get the most accurate answer with your court records in front of you. Virginia's Online Case Information System (OCIS) lets you search court cases across the state by name, for free.</p>
+    <p data-l="es">Obtendrá la respuesta más precisa si tiene sus récords judiciales a la mano. El Sistema de Información de Casos en Línea de Virginia (OCIS, por sus siglas en inglés) le permite buscar casos judiciales de todo el estado por nombre, gratis. El sitio está en inglés.</p>
+    <ol data-l="en">
+      <li>Open <a href="https://eapps.courts.state.va.us/ocis/landing" target="_blank" rel="noopener">OCIS at eapps.courts.state.va.us/ocis/landing<span class="sr-only"> (opens in a new tab)</span></a> and accept the terms.</li>
       <li>Search by your name. Try any other names you've used.</li>
       <li>Open each case and note the details below. Run this guide once for each charge.</li>
     </ol>
+    <ol data-l="es">
+      <li>Abra <a href="https://eapps.courts.state.va.us/ocis/landing" target="_blank" rel="noopener">OCIS en eapps.courts.state.va.us/ocis/landing<span class="sr-only"> (se abre en una pestaña nueva)</span></a> y acepte los términos.</li>
+      <li>Busque por su nombre. Pruebe también cualquier otro nombre que haya usado.</li>
+      <li>Abra cada caso y anote los datos de abajo. Use esta guía una vez por cada cargo.</li>
+    </ol>
     <div class="need">
-      <h3>What to note for each charge</h3>
-      <ul>
+      <h3><span data-l="en">What to note for each charge</span><span data-l="es">Qué anotar de cada cargo</span></h3>
+      <ul data-l="en">
         <li>Offense date</li>
         <li>Code section (for example, 18.2-96)</li>
         <li>Misdemeanor or felony, and its class</li>
@@ -118,28 +146,49 @@ code{font-family:var(--mono);font-size:.9em}
         <li>Restitution ordered and paid</li>
         <li>Other charges decided the same day</li>
       </ul>
+      <ul data-l="es">
+        <li>Fecha del delito</li>
+        <li>Sección del código (por ejemplo, 18.2-96)</li>
+        <li>Delito menor (misdemeanor) o delito grave (felony), y su clase</li>
+        <li>Resolución final (disposition) y su fecha</li>
+        <li>Fecha de salida de la cárcel o prisión, si la hubo</li>
+        <li>Violaciones de libertad condicional (probation o parole) en el caso</li>
+        <li>Restitución ordenada y pagada</li>
+        <li>Otros cargos resueltos el mismo día</li>
+      </ul>
     </div>
-    <p class="help">You'll also need to know your other convictions, with dates, and when you were last arrested or charged. A full criminal history from the Virginia State Police is the most complete source.</p>
+    <p class="help" data-l="en">You'll also need to know your other convictions, with dates, and when you were last arrested or charged. A full criminal history from the Virginia State Police is the most complete source.</p>
+    <p class="help" data-l="es">También necesitará saber sus otras condenas, con sus fechas, y cuándo fue su arresto o cargo más reciente. El historial penal completo de la Policía Estatal de Virginia es la fuente más completa.</p>
   </section>
 
-  <section class="tool" id="tool" aria-live="polite">
-    <div class="toolhead"><div class="eyebrow">Check one record</div><div class="stepcount" id="stepcount"></div></div>
+  <section class="tool" id="tool" aria-labelledby="toolh">
+    <div class="toolhead"><h2 class="eyebrow toolh" id="toolh"><span data-l="en">Check one record</span><span data-l="es">Revise un récord</span></h2><div class="stepcount" id="stepcount" aria-hidden="true"></div></div>
     <div id="stage"></div>
   </section>
 
+  </main>
+
   <footer class="disclaimer">
-    <p><b>This is not legal advice.</b> It follows the text of Virginia Code §§ 19.2-392.5 through 19.2-392.17 as published in October 2026. Laws change, and courts interpret them. Before you rely on a result, confirm it with a legal aid office or an attorney.</p>
-    <p>Records that can't be sealed may still qualify for expungement under § 19.2-392.2, which is a separate process.</p>
+    <p data-l="en"><b>This is not legal advice.</b> It follows the text of Virginia Code §§ 19.2-392.5 through 19.2-392.17 as published in October 2026. Laws change, and courts interpret them. Before you rely on a result, confirm it with a legal aid office or an attorney.</p>
+    <p data-l="es"><b>Esto no es asesoría legal.</b> Sigue el texto del Código de Virginia §§ 19.2-392.5 a 19.2-392.17 publicado en octubre de 2026. Las leyes cambian y los tribunales las interpretan. Antes de confiar en un resultado, confírmelo con una oficina de asistencia legal o un abogado.</p>
+    <p data-l="en">Records that can't be sealed may still qualify for expungement under § 19.2-392.2, which is a separate process.</p>
+    <p data-l="es">Los récords que no se pueden sellar aún podrían calificar para eliminación (expungement) bajo § 19.2-392.2, que es un proceso aparte.</p>
   </footer>
 </div>
 
 <script>
 (function(){
+let LANG = 'en';
+try { const s = localStorage.getItem('sealing-lang'); if(s==='en'||s==='es') LANG = s; else if((navigator.language||'').toLowerCase().startsWith('es')) LANG = 'es'; } catch(e){ if((navigator.language||'').toLowerCase().startsWith('es')) LANG = 'es'; }
+const S = (en, es) => LANG==='es' ? es : en;
+const L = (en, es) => ({en, es});
+
 const CUT = new Date(1986,0,1);
 const t0 = new Date(); const TODAY = new Date(t0.getFullYear(), t0.getMonth(), t0.getDate());
+const TODAY_ISO = `${TODAY.getFullYear()}-${String(TODAY.getMonth()+1).padStart(2,'0')}-${String(TODAY.getDate()).padStart(2,'0')}`;
 const parseD = s => { if(!s) return null; const p = s.split('-').map(Number); if(p.length!==3||p.some(isNaN)) return null; return new Date(p[0],p[1]-1,p[2]); };
 const addY = (d,n) => { const r = new Date(d); r.setFullYear(r.getFullYear()+n); return r; };
-const fmt = d => d.toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+const fmt = d => d.toLocaleDateString(LANG==='es'?'es-US':'en-US',{year:'numeric',month:'long',day:'numeric'});
 const maxD = (...a) => a.filter(Boolean).reduce((m,d)=> !m||d>m ? d : m, null);
 
 let A = {};          // answers
@@ -149,106 +198,107 @@ const stage = document.getElementById('stage');
 const stepcount = document.getElementById('stepcount');
 
 const MINOR = [
-  {v:'4.1-305', l:'§ 4.1-305', h:'Underage purchase or possession of alcohol'},
-  {v:'18.2-96', l:'§ 18.2-96, misdemeanor only', h:'Petit larceny'},
-  {v:'18.2-103', l:'§ 18.2-103, misdemeanor only', h:'Concealing or altering price of merchandise (shoplifting)'},
-  {v:'18.2-119', l:'§ 18.2-119', h:'Trespass after being forbidden'},
-  {v:'18.2-120', l:'§ 18.2-120', h:'Entering property to damage it'},
-  {v:'18.2-134', l:'§ 18.2-134', h:'Trespass on posted property'},
-  {v:'18.2-248.1', l:'§ 18.2-248.1, misdemeanor only', h:'Marijuana distribution or possession with intent'},
-  {v:'18.2-265.3A', l:'§ 18.2-265.3(A)', h:'Selling drug paraphernalia'},
-  {v:'18.2-415', l:'§ 18.2-415', h:'Disorderly conduct'},
-  {v:'none', l:'None of these', h:'Or the felony version of one of these'}
+  {v:'4.1-305', l:'§ 4.1-305', h:L('Underage purchase or possession of alcohol','Compra o posesión de alcohol por menores de edad')},
+  {v:'18.2-96', l:L('§ 18.2-96, misdemeanor only','§ 18.2-96, solo delito menor'), h:L('Petit larceny','Hurto menor (petit larceny)')},
+  {v:'18.2-103', l:L('§ 18.2-103, misdemeanor only','§ 18.2-103, solo delito menor'), h:L('Concealing or altering price of merchandise (shoplifting)','Ocultar mercancía o alterar su precio (hurto en tiendas)')},
+  {v:'18.2-119', l:'§ 18.2-119', h:L('Trespass after being forbidden','Entrada ilegal después de haber sido prohibida')},
+  {v:'18.2-120', l:'§ 18.2-120', h:L('Entering property to damage it','Entrar a una propiedad para dañarla')},
+  {v:'18.2-134', l:'§ 18.2-134', h:L('Trespass on posted property','Entrada ilegal en propiedad señalizada')},
+  {v:'18.2-248.1', l:L('§ 18.2-248.1, misdemeanor only','§ 18.2-248.1, solo delito menor'), h:L('Marijuana distribution or possession with intent','Distribución de marihuana o posesión con intención de distribuir')},
+  {v:'18.2-265.3A', l:'§ 18.2-265.3(A)', h:L('Selling drug paraphernalia','Venta de parafernalia de drogas')},
+  {v:'18.2-415', l:'§ 18.2-415', h:L('Disorderly conduct','Alteración del orden público')},
+  {v:'none', l:L('None of these','Ninguno de estos'), h:L('Or the felony version of one of these','O la versión de delito grave de uno de estos')}
 ];
 const PETITION_ONLY = ['4.1-305','18.2-265.3A'];
-
-const yesno = [{v:'yes',l:'Yes'},{v:'no',l:'No'}];
+const yesno = [{v:'yes',l:L('Yes','Sí')},{v:'no',l:L('No','No')}];
+const NOTRAFFIC = L('Traffic infractions don’t count.','Las infracciones de tránsito no cuentan.');
 
 const N = {
   q1:{type:'choice', key:'juv',
-    title:'Was this a juvenile case that stayed in juvenile court?',
-    help:'Answer Yes if you were under 18 and the case was decided in a juvenile and domestic relations district court. If you were tried as an adult in circuit court, answer No.',
+    title:L('Was this a juvenile case that stayed in juvenile court?','¿Fue un caso de menor de edad que se quedó en el tribunal de menores?'),
+    help:L('Answer Yes if you were under 18 and the case was decided in a juvenile and domestic relations district court. If you were tried as an adult in circuit court, answer No.',
+           'Responda Sí si usted tenía menos de 18 años y el caso se resolvió en un tribunal de distrito de menores y relaciones domésticas. Si lo juzgaron como adulto en un tribunal de circuito, responda No.'),
     options:yesno, next:a=> a.juv==='yes' ? 'R:juv' : 'q2'},
-  q2:{type:'choice', key:'kind', title:'What kind of record is this?',
+  q2:{type:'choice', key:'kind', title:L('What kind of record is this?','¿Qué tipo de récord es?'),
     options:[
-      {v:'traffic', l:'A traffic infraction', h:'A ticket that is not a crime, such as most speeding tickets. Reckless driving and DUI are crimes, so choose criminal charge for those.'},
-      {v:'anc', l:'A violation, contempt, failure to appear, or bail appeal', h:'A probation, parole or suspended-sentence violation, contempt of court, a failure-to-appear charge, or an appeal of a bail decision.'},
-      {v:'crim', l:'A criminal charge', h:'Any misdemeanor or felony charge.'}],
+      {v:'traffic', l:L('A traffic infraction','Una infracción de tránsito'), h:L('A ticket that is not a crime, such as most speeding tickets. Reckless driving and DUI are crimes, so choose criminal charge for those.','Una multa que no es un delito, como la mayoría de las multas por exceso de velocidad. Manejar de forma temeraria (reckless driving) y manejar bajo la influencia (DUI) son delitos; para esos, elija cargo penal.')},
+      {v:'anc', l:L('A violation, contempt, failure to appear, or bail appeal','Una violación, desacato, falta de comparecencia o apelación de fianza'), h:L('A probation, parole or suspended-sentence violation, contempt of court, a failure-to-appear charge, or an appeal of a bail decision.','Una violación de libertad condicional (probation o parole) o de sentencia suspendida, desacato al tribunal, un cargo por no presentarse al tribunal, o una apelación de una decisión de fianza.')},
+      {v:'crim', l:L('A criminal charge','Un cargo penal'), h:L('Any misdemeanor or felony charge.','Cualquier cargo de delito menor (misdemeanor) o delito grave (felony).')}],
     next:a=> ({traffic:'a1', anc:'b1', crim:'q3'})[a.kind]},
-  q3:{type:'choice', key:'mj', title:'Was the charge simple possession of marijuana under former § 18.2-250.1?',
-    help:'This is possession only, not distribution or possession with intent to distribute.',
+  q3:{type:'choice', key:'mj', title:L('Was the charge simple possession of marijuana under former § 18.2-250.1?','¿Fue el cargo por posesión simple de marihuana bajo el antiguo § 18.2-250.1?'),
+    help:L('This is possession only, not distribution or possession with intent to distribute.','Se refiere solo a posesión, no a distribución ni a posesión con intención de distribuir.'),
     options:yesno, next:a=> a.mj==='yes' ? 'R:mj' : 'q4'},
-  q4:{type:'choice', key:'disp', title:'How did the case end?',
-    help:'Use the final disposition shown on the case.',
+  q4:{type:'choice', key:'disp', title:L('How did the case end?','¿Cómo terminó el caso?'),
+    help:L('Use the final disposition shown on the case.','Use la resolución final (final disposition) que aparece en el caso.'),
     options:[
-      {v:'pending', l:'It is still open'},
-      {v:'acq', l:'Not guilty (acquitted)'},
-      {v:'dwp', l:'Dismissed with prejudice', h:'Dismissed so the charge cannot be brought again.'},
-      {v:'nolle', l:'Nolle prosequi, or another kind of dismissal', h:'The prosecutor dropped the charge, or it was dismissed without prejudice.'},
-      {v:'def', l:'Deferred, then dismissed', h:'For example, first-offender probation or a case taken under advisement and later dismissed.'},
-      {v:'conv', l:'Convicted', h:'You pleaded guilty or were found guilty.'}],
+      {v:'pending', l:L('It is still open','Todavía está abierto')},
+      {v:'acq', l:L('Not guilty (acquitted)','No culpable (absuelto)')},
+      {v:'dwp', l:L('Dismissed with prejudice','Desestimado con perjuicio (with prejudice)'), h:L('Dismissed so the charge cannot be brought again.','Desestimado de modo que el cargo no se puede volver a presentar.')},
+      {v:'nolle', l:L('Nolle prosequi, or another kind of dismissal','Nolle prosequi u otro tipo de desestimación'), h:L('The prosecutor dropped the charge, or it was dismissed without prejudice.','El fiscal retiró el cargo, o se desestimó sin perjuicio (without prejudice).')},
+      {v:'def', l:L('Deferred, then dismissed','Diferido y luego desestimado'), h:L('For example, first-offender probation or a case taken under advisement and later dismissed.','Por ejemplo, libertad condicional para primeros infractores (first offender) o un caso tomado bajo consideración (under advisement) y luego desestimado.')},
+      {v:'conv', l:L('Convicted','Condenado'), h:L('You pleaded guilty or were found guilty.','Usted se declaró culpable o lo declararon culpable.')}],
     next:a=> a.disp==='pending' ? 'R:pend' : (a.disp==='def'||a.disp==='conv') ? 'd1' : 'c1'},
 
   // Flow A: traffic
-  a1:{type:'form', title:'When did the traffic infraction happen, and when was it decided?',
-    fields:[{key:'offDate', label:'Offense date', type:'date', req:true},
-            {key:'dispDate', label:'Final disposition date', type:'date', req:true, help:'The date the court decided the case.'}],
+  a1:{type:'form', title:L('When did the traffic infraction happen, and when was it decided?','¿Cuándo ocurrió la infracción de tránsito y cuándo se resolvió?'),
+    fields:[{key:'offDate', label:L('Offense date','Fecha de la infracción'), type:'date', req:true},
+            {key:'dispDate', label:L('Final disposition date','Fecha de la resolución final'), type:'date', req:true, help:L('The date the court decided the case.','La fecha en que el tribunal resolvió el caso.')}],
     next:a=>{ if(parseD(a.offDate)<CUT) return 'R:pre86';
       return addY(parseD(a.dispDate),11)<=TODAY ? 'R:tr_now' : 'R:tr_later'; }},
 
   // Flow B: ancillary
-  b1:{type:'choice', key:'anc', title:'Has the main charge this matter is tied to already been sealed?',
-    help:'For example, if this is a probation violation, the main charge is the offense you were on probation for.',
+  b1:{type:'choice', key:'anc', title:L('Has the main charge this matter is tied to already been sealed?','¿Ya se selló el cargo principal relacionado con este asunto?'),
+    help:L('For example, if this is a probation violation, the main charge is the offense you were on probation for.','Por ejemplo, si esto es una violación de libertad condicional, el cargo principal es el delito por el que estaba en libertad condicional.'),
     options:[
-      {v:'auto', l:'Yes, it was sealed automatically', h:'Through the marijuana possession rule, or the State Police monthly or annual sealing review.'},
-      {v:'judge', l:'Yes, a judge sealed it when I was acquitted or the case was dismissed'},
-      {v:'petition', l:'Yes, a judge sealed it after I filed a petition'},
-      {v:'no', l:'No, or I don’t know'}],
+      {v:'auto', l:L('Yes, it was sealed automatically','Sí, se selló automáticamente'), h:L('Through the marijuana possession rule, or the State Police monthly or annual sealing review.','Por la regla de posesión de marihuana, o por la revisión mensual o anual de sellado de la Policía Estatal.')},
+      {v:'judge', l:L('Yes, a judge sealed it when I was acquitted or the case was dismissed','Sí, un juez lo selló cuando me absolvieron o desestimaron el caso')},
+      {v:'petition', l:L('Yes, a judge sealed it after I filed a petition','Sí, un juez lo selló después de que presenté una petición')},
+      {v:'no', l:L('No, or I don’t know','No, o no sé')}],
     next:a=> ({auto:'R:anc_pr', judge:'R:anc_ne', petition:'R:anc_pet', no:'R:anc_link'})[a.anc]},
 
   // Flow C: acquittals and dismissals
-  c1:{type:'choice', key:'level', title:'Was the charge a misdemeanor or a felony?', options:[{v:'misd',l:'Misdemeanor'},{v:'fel',l:'Felony'}],
+  c1:{type:'choice', key:'level', title:L('Was the charge a misdemeanor or a felony?','¿El cargo fue un delito menor o un delito grave?'), options:[{v:'misd',l:L('Misdemeanor','Delito menor (misdemeanor)')},{v:'fel',l:L('Felony','Delito grave (felony)')}],
     next:a=>{ const strong = a.disp==='acq'||a.disp==='dwp';
       if(a.level==='fel') return strong ? 'c2' : 'R:exp';
       return strong ? 'c3' : 'c4'; }},
-  c2:{type:'choice', key:'felReq', title:'At the hearing, did you ask the judge to seal the record, and did the prosecutor agree?',
-    help:'For felony acquittals and dismissals with prejudice, sealing happens only if you asked right then and the prosecutor agreed.',
+  c2:{type:'choice', key:'felReq', title:L('At the hearing, did you ask the judge to seal the record, and did the prosecutor agree?','En la audiencia, ¿le pidió al juez que sellara el récord y el fiscal estuvo de acuerdo?'),
+    help:L('For felony acquittals and dismissals with prejudice, sealing happens only if you asked right then and the prosecutor agreed.','En absoluciones y desestimaciones con perjuicio de delitos graves, el sellado ocurre solo si usted lo pidió en ese momento y el fiscal estuvo de acuerdo.'),
     options:yesno, next:a=> a.felReq==='yes' ? 'R:fel_ar' : 'R:exp'},
-  c3:{type:'choice', key:'ordered', title:'Does the court order show the judge ordered the charge sealed when the case ended?',
-    help:'Courts now order sealing at the time of a misdemeanor acquittal or dismissal with prejudice, unless you object. Older cases won’t show this.',
-    options:[{v:'yes',l:'Yes'},{v:'no',l:'No, or I’m not sure'}], next:a=> a.ordered==='yes' ? 'R:mis_ar' : 'c4'},
-  c4:{type:'form', title:'When did the offense happen?',
-    fields:[{key:'offDate', label:'Offense date', type:'date', req:true}],
+  c3:{type:'choice', key:'ordered', title:L('Does the court order show the judge ordered the charge sealed when the case ended?','¿La orden del tribunal muestra que el juez ordenó sellar el cargo cuando terminó el caso?'),
+    help:L('Courts now order sealing at the time of a misdemeanor acquittal or dismissal with prejudice, unless you object. Older cases won’t show this.','Ahora los tribunales ordenan el sellado al momento de una absolución o desestimación con perjuicio de un delito menor, a menos que usted se oponga. Los casos más antiguos no lo mostrarán.'),
+    options:[{v:'yes',l:L('Yes','Sí')},{v:'no',l:L('No, or I’m not sure','No, o no estoy seguro')}], next:a=> a.ordered==='yes' ? 'R:mis_ar' : 'c4'},
+  c4:{type:'form', title:L('When did the offense happen?','¿Cuándo ocurrió el delito?'),
+    fields:[{key:'offDate', label:L('Offense date','Fecha del delito'), type:'date', req:true}],
     next:a=> parseD(a.offDate)<CUT ? 'R:pre86_exp' : 'c5'},
-  c5:{type:'choice', key:'priorConv', title:'Does your record have any convictions that have not been sealed?',
-    help:'Count convictions for Virginia offenses. Traffic infractions don’t count. Convictions already sealed don’t count.',
+  c5:{type:'choice', key:'priorConv', title:L('Does your record have any convictions that have not been sealed?','¿Tiene su récord alguna condena que no se haya sellado?'),
+    help:L('Count convictions for Virginia offenses. Traffic infractions don’t count. Convictions already sealed don’t count.','Cuente las condenas por delitos de Virginia. Las infracciones de tránsito no cuentan. Las condenas ya selladas no cuentan.'),
     options:[
-      {v:'yes', l:'Yes, at least one unsealed conviction'},
-      {v:'defonly', l:'No convictions, but at least one unsealed deferred dismissal'},
-      {v:'no', l:'No'}],
+      {v:'yes', l:L('Yes, at least one unsealed conviction','Sí, al menos una condena sin sellar')},
+      {v:'defonly', l:L('No convictions, but at least one unsealed deferred dismissal','Ninguna condena, pero al menos una desestimación diferida sin sellar')},
+      {v:'no', l:L('No','No')}],
     next:a=> a.priorConv==='yes' ? 'R:conv_block' : 'c6'},
-  c6:{type:'form', title:'When were you most recently arrested or charged?',
-    help:'Include this case. Count only Virginia offenses, and leave out traffic infractions.',
-    fields:[{key:'lastArrest', label:'Date of your most recent arrest or charge', type:'date', req:true}],
+  c6:{type:'form', title:L('When were you most recently arrested or charged?','¿Cuándo fue su arresto o cargo más reciente?'),
+    help:L('Include this case. Count only Virginia offenses, and leave out traffic infractions.','Incluya este caso. Cuente solo delitos de Virginia y no incluya infracciones de tránsito.'),
+    fields:[{key:'lastArrest', label:L('Date of your most recent arrest or charge','Fecha de su arresto o cargo más reciente'), type:'date', req:true}],
     next:a=> addY(parseD(a.lastArrest),3)<=TODAY ? 'R:sweep_now' : 'R:sweep_later'},
 
   // Flow D: convictions and deferrals
-  d1:{type:'form', title:'When did the offense happen, and when was the case decided?',
-    fields:[{key:'offDate', label:'Offense date', type:'date', req:true},
-            {key:'dispDate', label: a=> a.disp==='def' ? 'Date the deferred charge was dismissed' : 'Conviction date', type:'date', req:true}],
+  d1:{type:'form', title:L('When did the offense happen, and when was the case decided?','¿Cuándo ocurrió el delito y cuándo se resolvió el caso?'),
+    fields:[{key:'offDate', label:L('Offense date','Fecha del delito'), type:'date', req:true},
+            {key:'dispDate', label: a=> a.disp==='def' ? S('Date the deferred charge was dismissed','Fecha en que se desestimó el cargo diferido') : S('Conviction date','Fecha de la condena'), type:'date', req:true}],
     next:a=> parseD(a.offDate)<CUT ? 'R:pre86' : 'd2'},
-  d2:{type:'choice', key:'sec', title:'Is the offense one of these?',
-    help:'Check the code section on the charge.',
+  d2:{type:'choice', key:'sec', title:L('Is the offense one of these?','¿Es el delito uno de estos?'),
+    help:L('Check the code section on the charge.','Revise la sección del código en el cargo.'),
     options:MINOR, next:a=> a.sec==='none' ? 'e1' : 'd3'},
-  d3:{type:'choice', key:'same', title:'On the same day, did any other charge end in a conviction or deferral?',
+  d3:{type:'choice', key:'same', title:L('On the same day, did any other charge end in a conviction or deferral?','El mismo día, ¿terminó algún otro cargo en condena o en disposición diferida?'),
     options:[
-      {v:'none', l:'No'},
-      {v:'list', l:'Yes, but only for offenses on the list', h:'And none of them was a conviction under § 4.1-305 or § 18.2-265.3(A).'},
-      {v:'blockauto', l:'Yes, including a conviction under § 4.1-305 or § 18.2-265.3(A)'},
-      {v:'off', l:'Yes, including an offense that is not on the list'}],
+      {v:'none', l:L('No','No')},
+      {v:'list', l:L('Yes, but only for offenses on the list','Sí, pero solo por delitos de la lista'), h:L('And none of them was a conviction under § 4.1-305 or § 18.2-265.3(A).','Y ninguno fue una condena bajo § 4.1-305 o § 18.2-265.3(A).')},
+      {v:'blockauto', l:L('Yes, including a conviction under § 4.1-305 or § 18.2-265.3(A)','Sí, incluida una condena bajo § 4.1-305 o § 18.2-265.3(A)')},
+      {v:'off', l:L('Yes, including an offense that is not on the list','Sí, incluido un delito que no está en la lista')}],
     next:a=> a.same==='off' ? 'e1' : 'd4'},
-  d4:{type:'choice', key:'new7', title: a=>`Have you been convicted of anything else between ${fmt(parseD(a.dispDate))} and ${fmt(addY(parseD(a.dispDate),7))}?`,
-    help:'Count convictions in any state or federal court. Traffic infractions don’t count.',
+  d4:{type:'choice', key:'new7', title: a=> S(`Have you been convicted of anything else between ${fmt(parseD(a.dispDate))} and ${fmt(addY(parseD(a.dispDate),7))}?`, `¿Lo han condenado por algún otro delito entre el ${fmt(parseD(a.dispDate))} y el ${fmt(addY(parseD(a.dispDate),7))}?`),
+    help:L('Count convictions in any state or federal court. Traffic infractions don’t count.','Cuente condenas en cualquier tribunal estatal o federal. Las infracciones de tránsito no cuentan.'),
     options:yesno,
     next:a=>{ if(a.new7==='yes') return 'e1';
       const auto = a.disp==='conv' && !PETITION_ONLY.includes(a.sec) && a.same!=='blockauto';
@@ -256,18 +306,18 @@ const N = {
       return auto ? (due?'R:auto_now':'R:auto_later') : (due?'R:p121_now':'R:p121_later'); }},
 
   // Flow E: general petition
-  e1:{type:'choice', key:'cls', title:'What level was the offense?',
-    help:'The class appears on the warrant, summons, indictment, or final order.',
+  e1:{type:'choice', key:'cls', title:L('What level was the offense?','¿De qué nivel fue el delito?'),
+    help:L('The class appears on the warrant, summons, indictment, or final order.','La clase aparece en la orden de arresto, la citación, la acusación formal (indictment) o la orden final.'),
     options:[
-      {v:'misd', l:'Misdemeanor (any class)'},
-      {v:'f56', l:'Class 5 or Class 6 felony'},
-      {v:'gl', l:'Grand larceny under § 18.2-95', h:'Or another felony punished as grand larceny.'},
-      {v:'f14', l:'Class 1, 2, 3 or 4 felony'},
-      {v:'fu', l:'Unclassified felony', h:'A felony with its own penalty range instead of a class.'}],
+      {v:'misd', l:L('Misdemeanor (any class)','Delito menor (cualquier clase)')},
+      {v:'f56', l:L('Class 5 or Class 6 felony','Delito grave de Clase 5 o Clase 6')},
+      {v:'gl', l:L('Grand larceny under § 18.2-95','Hurto mayor (grand larceny) bajo § 18.2-95'), h:L('Or another felony punished as grand larceny.','U otro delito grave castigado como hurto mayor.')},
+      {v:'f14', l:L('Class 1, 2, 3 or 4 felony','Delito grave de Clase 1, 2, 3 o 4')},
+      {v:'fu', l:L('Unclassified felony','Delito grave sin clasificar'), h:L('A felony with its own penalty range instead of a class.','Un delito grave con su propio rango de pena en lugar de una clase.')}],
     next:a=> (a.cls==='f14'||a.cls==='fu') ? 'R:e_level' : 'e2'},
-  e2:{type:'choice', key:'excl', title:'Is the offense in any of these excluded categories?',
-    help:'Open the list and compare it with your charge.',
-    extra:`<details class="list"><summary>Show the excluded offenses, § 19.2-392.12(L)</summary><ul>
+  e2:{type:'choice', key:'excl', title:L('Is the offense in any of these excluded categories?','¿Está el delito en alguna de estas categorías excluidas?'),
+    help:L('Open the list and compare it with your charge.','Abra la lista y compárela con su cargo.'),
+    extra:L(`<details class="list"><summary>Show the excluded offenses, § 19.2-392.12(L)</summary><ul>
       <li>DUI and related offenses: §§ 18.2-266, 18.2-266.1, 18.2-268.3</li>
       <li>Assault and battery of a family or household member, § 18.2-57.2, or any offense where the victim was a family or household member</li>
       <li>Stalking and related offenses: §§ 18.2-60.3, 18.2-60.5</li>
@@ -283,39 +333,55 @@ const N = {
       <li>These specific sections: 4.1-309.1, 5.1-13, 18.2-36, 18.2-36.1, 18.2-36.2, 18.2-47, 18.2-49.1(A), 18.2-51.5, 18.2-57(C), 18.2-57.3, 18.2-59.1, 18.2-60, 18.2-130, 18.2-130.1, 18.2-144, 18.2-144.1, 18.2-154, 18.2-178.1, 18.2-282.1, 18.2-324.2, former 18.2-346(B), 18.2-405, 18.2-406, 18.2-472.1, 19.2-62, 29.1-738, 29.1-738.02, 29.1-738.2, 37.2-912, 40.1-100.2, 40.1-103, 46.2-341.24, 46.2-341.26:3</li>
       <li>Attempt, conspiracy, solicitation or accessory charges for any offense above, or for any offense that would be a Class 1–4 felony or carry more than 10 years (grand larceny is an exception)</li>
     </ul></details>`,
-    options:[{v:'yes',l:'Yes, it is on this list'},{v:'no',l:'No'}], next:a=> a.excl==='yes' ? 'R:e_excl' : 'e3'},
-  e3:{type:'checks', title:'Do any of these apply to this case right now?',
-    help:'Check all that apply. Leave all unchecked if none do.',
+    `<details class="list"><summary>Mostrar los delitos excluidos, § 19.2-392.12(L)</summary><ul>
+      <li>Manejar bajo la influencia (DUI) y delitos relacionados: §§ 18.2-266, 18.2-266.1, 18.2-268.3</li>
+      <li>Agresión contra un familiar o miembro del hogar, § 18.2-57.2, o cualquier delito en el que la víctima fuera un familiar o miembro del hogar</li>
+      <li>Acoso (stalking) y delitos relacionados: §§ 18.2-60.3, 18.2-60.5</li>
+      <li>Violar una orden de protección</li>
+      <li>Delitos que requieren registro como agresor sexual, y delitos de agresión sexual</li>
+      <li>Delitos graves violentos de la lista del § 17.1-805(C)</li>
+      <li>Delitos de odio</li>
+      <li>Delitos de la ley electoral (Título 24.2)</li>
+      <li>Posesión o distribución de flunitrazepam o GHB</li>
+      <li>Casos que terminaron en no culpable por razón de demencia</li>
+      <li>La mayoría de los delitos de prostitución, obscenidad y relacionados del Título 18.2, Capítulo 8, Artículos 3, 4 y 5 (se permiten algunos, incluidos §§ 18.2-346, 18.2-347, 18.2-365, 18.2-371.2–371.4, 18.2-388)</li>
+      <li>Ciertos delitos relacionados con animales del Título 3.2, Capítulo 65, Artículo 9</li>
+      <li>Estas secciones específicas: 4.1-309.1, 5.1-13, 18.2-36, 18.2-36.1, 18.2-36.2, 18.2-47, 18.2-49.1(A), 18.2-51.5, 18.2-57(C), 18.2-57.3, 18.2-59.1, 18.2-60, 18.2-130, 18.2-130.1, 18.2-144, 18.2-144.1, 18.2-154, 18.2-178.1, 18.2-282.1, 18.2-324.2, antiguo 18.2-346(B), 18.2-405, 18.2-406, 18.2-472.1, 19.2-62, 29.1-738, 29.1-738.02, 29.1-738.2, 37.2-912, 40.1-100.2, 40.1-103, 46.2-341.24, 46.2-341.26:3</li>
+      <li>Cargos de tentativa, conspiración, solicitación o complicidad para cualquier delito de arriba, o para cualquier delito que sería un delito grave de Clase 1 a 4 o con pena de más de 10 años (el hurto mayor es una excepción)</li>
+    </ul></details>`),
+    options:[{v:'yes',l:L('Yes, it is on this list','Sí, está en esta lista')},{v:'no',l:L('No','No')}], next:a=> a.excl==='yes' ? 'R:e_excl' : 'e3'},
+  e3:{type:'checks', title:L('Do any of these apply to this case right now?','¿Aplica alguno de estos a este caso en este momento?'),
+    help:L('Check all that apply. Leave all unchecked if none do.','Marque todos los que apliquen. Si ninguno aplica, deje todos sin marcar.'),
     checks:[
-      {key:'gun', l:'It was a felony where a firearm was used, and my gun rights have not been restored'},
-      {key:'animal', l:'The court banned me from owning a companion animal because of this case, and the ban is still in effect'},
-      {key:'dog', l:'It involved a dangerous or vicious dog that I still own'}],
+      {key:'gun', l:L('It was a felony where a firearm was used, and my gun rights have not been restored','Fue un delito grave en el que se usó un arma de fuego, y no me han restaurado el derecho a tener armas')},
+      {key:'animal', l:L('The court banned me from owning a companion animal because of this case, and the ban is still in effect','El tribunal me prohibió tener un animal de compañía por este caso, y la prohibición sigue vigente')},
+      {key:'dog', l:L('It involved a dangerous or vicious dog that I still own','Involucró un perro peligroso o agresivo que todavía es mío')}],
     next:a=> (a.gun||a.animal||a.dog) ? 'R:e_cond' : 'e4'},
-  e4:{type:'choice', key:'prior12', title:'How many times has a court granted you a sealing petition under § 19.2-392.12?',
-    help:'This counts only general sealing petitions. Automatic sealing and petitions under § 19.2-392.12:1 don’t count.',
-    options:[{v:'0',l:'None'},{v:'1',l:'One'},{v:'2',l:'Two'}], next:a=> a.prior12==='2' ? 'R:e_limit' : 'e5'},
-  e5:{type:'choice', key:'c12', title:'Have you ever been convicted of a Class 1 or Class 2 felony, or any felony punishable by life in prison?',
+  e4:{type:'choice', key:'prior12', title:L('How many times has a court granted you a sealing petition under § 19.2-392.12?','¿Cuántas veces un tribunal le ha concedido una petición de sellado bajo § 19.2-392.12?'),
+    help:L('This counts only general sealing petitions. Automatic sealing and petitions under § 19.2-392.12:1 don’t count.','Cuente solo las peticiones generales de sellado. El sellado automático y las peticiones bajo § 19.2-392.12:1 no cuentan.'),
+    options:[{v:'0',l:L('None','Ninguna')},{v:'1',l:L('One','Una')},{v:'2',l:L('Two','Dos')}], next:a=> a.prior12==='2' ? 'R:e_limit' : 'e5'},
+  e5:{type:'choice', key:'c12', title:L('Have you ever been convicted of a Class 1 or Class 2 felony, or any felony punishable by life in prison?','¿Alguna vez lo han condenado por un delito grave de Clase 1 o Clase 2, o por cualquier delito grave castigado con cadena perpetua?'),
     options:yesno, next:a=> a.c12==='yes' ? 'R:e_c12' : 'e6'},
-  e6:{type:'form', title:'When were your most recent felony convictions?',
-    help:'Leave a date blank if you have no conviction of that kind. Include this case if it is a felony.',
-    fields:[{key:'f34', label:'Most recent Class 3 or Class 4 felony conviction', type:'date'},
-            {key:'fOther', label:'Most recent other felony conviction', type:'date', help:'Class 5, Class 6, unclassified, or grand larceny.'}],
+  e6:{type:'form', title:L('When were your most recent felony convictions?','¿Cuándo fueron sus condenas más recientes por delitos graves?'),
+    help:L('Leave a date blank if you have no conviction of that kind. Include this case if it is a felony.','Deje la fecha en blanco si no tiene una condena de ese tipo. Incluya este caso si es un delito grave.'),
+    fields:[{key:'f34', label:L('Most recent Class 3 or Class 4 felony conviction','Condena más reciente por delito grave de Clase 3 o Clase 4'), type:'date'},
+            {key:'fOther', label:L('Most recent other felony conviction','Condena más reciente por otro delito grave'), type:'date', help:L('Class 5, Class 6, unclassified, or grand larceny.','Clase 5, Clase 6, sin clasificar, o hurto mayor.')}],
     next:()=> 'e7'},
-  e7:{type:'form', title:'Which of these dates apply to this case?',
-    help:'The waiting period starts from the latest of these dates. Leave blank any that don’t apply.',
-    fields:[{key:'dispDate', label: a=> a.disp==='def' ? 'Date the deferred charge was dismissed' : 'Conviction date', type:'date', req:true},
-            {key:'rel', label:'Release from jail or prison for this case', type:'date'},
-            {key:'viol', label:'Most recent finding that you violated probation, parole or a suspended sentence on this case', type:'date'},
-            {key:'relViol', label:'Release from jail or prison after that violation', type:'date'}],
+  e7:{type:'form', title:L('Which of these dates apply to this case?','¿Cuáles de estas fechas aplican a este caso?'),
+    help:L('The waiting period starts from the latest of these dates. Leave blank any that don’t apply.','El período de espera empieza en la más reciente de estas fechas. Deje en blanco las que no apliquen.'),
+    fields:[{key:'dispDate', label: a=> a.disp==='def' ? S('Date the deferred charge was dismissed','Fecha en que se desestimó el cargo diferido') : S('Conviction date','Fecha de la condena'), type:'date', req:true},
+            {key:'rel', label:L('Release from jail or prison for this case','Salida de la cárcel o prisión por este caso'), type:'date'},
+            {key:'viol', label:L('Most recent finding that you violated probation, parole or a suspended sentence on this case','Fecha más reciente en que se determinó que violó la libertad condicional (probation o parole) o una sentencia suspendida en este caso'), type:'date'},
+            {key:'relViol', label:L('Release from jail or prison after that violation','Salida de la cárcel o prisión después de esa violación'), type:'date'}],
     next:a=>{ A.S = maxD(parseD(a.dispDate),parseD(a.rel),parseD(a.viol),parseD(a.relViol)); return 'e8'; }},
-  e8:{type:'choice', key:'clean', title: a=>{ const w = a.cls==='misd'?7:10; return `Have you been convicted of anything else between ${fmt(a.S)} and ${fmt(addY(a.S,w))}?`; },
-    help:'Count convictions in any state or federal court, including ones in the future part of that range if they happen. Traffic infractions don’t count.',
+  e8:{type:'choice', key:'clean', title: a=>{ const w = a.cls==='misd'?7:10; return S(`Have you been convicted of anything else between ${fmt(a.S)} and ${fmt(addY(a.S,w))}?`, `¿Lo han condenado por algún otro delito entre el ${fmt(a.S)} y el ${fmt(addY(a.S,w))}?`); },
+    help:L('Count convictions in any state or federal court, including ones in the future part of that range if they happen. Traffic infractions don’t count.','Cuente condenas en cualquier tribunal estatal o federal, incluidas las que ocurran en la parte futura de ese período. Las infracciones de tránsito no cuentan.'),
     options:yesno, next:a=> a.clean==='yes' ? 'R:e_clean' : 'e9'},
-  e9:{type:'choice', key:'rest', title:'Did the court order you to pay restitution in this case?',
-    options:[{v:'none',l:'No restitution was ordered'},{v:'paid',l:'Yes, and it is paid in full'},{v:'unpaid',l:'Yes, and some is still owed'}],
+  e9:{type:'choice', key:'rest', title:L('Did the court order you to pay restitution in this case?','¿El tribunal le ordenó pagar restitución en este caso?'),
+    options:[{v:'none',l:L('No restitution was ordered','No se ordenó restitución')},{v:'paid',l:L('Yes, and it is paid in full','Sí, y está pagada por completo')},{v:'unpaid',l:L('Yes, and some is still owed','Sí, y todavía debo una parte')}],
     next:()=> 'e10'},
-  e10:{type:'choice', key:'subst', title:'Did the offense involve alcohol or drugs?',
-    help:'If so, the judge will need to see evidence that you have been rehabilitated.',
+  e10:{type:'choice', key:'subst', title:L('Did the offense involve alcohol or drugs?','¿El delito involucró alcohol o drogas?'),
+    help:L('If so, the judge will need to see evidence that you have been rehabilitated.','Si es así, el juez necesitará ver pruebas de que usted se ha rehabilitado.'),
     options:yesno,
     next:a=>{ const w = a.cls==='misd'?7:10;
       A.E = maxD(addY(a.S,w), a.f34?addY(parseD(a.f34),20):null, a.fOther?addY(parseD(a.fOther),10):null);
@@ -324,110 +390,139 @@ const N = {
 
 /* ---------- results ---------- */
 const CAT = {
-  ar:{l:'Sealed automatically · now', c:'--ar'}, at:{l:'Sealed automatically · later', c:'--at'},
-  pr:{l:'You can petition · now', c:'--pr'}, pt:{l:'You can petition · later', c:'--pt'},
-  ne:{l:'Not eligible', c:'--ne'}, pend:{l:'Not yet', c:'--pend'}, info:{l:'Next step', c:'--at'}
+  ar:{l:L('Sealed automatically · now','Sellado automático · ahora'), c:'--ar'}, at:{l:L('Sealed automatically · later','Sellado automático · más adelante'), c:'--at'},
+  pr:{l:L('You can petition · now','Puede presentar una petición · ahora'), c:'--pr'}, pt:{l:L('You can petition · later','Puede presentar una petición · más adelante'), c:'--pt'},
+  ne:{l:L('Not eligible','No elegible'), c:'--ne'}, pend:{l:L('Not yet','Todavía no'), c:'--pend'}, info:{l:L('Next step','Siguiente paso'), c:'--at'}
 };
-const HOWTO = `<div class="box"><h3>How to file a petition</h3><ol>
+const HOWTO = () => S(`<div class="box"><h3>How to file a petition</h3><ol>
   <li>File in the circuit court for the city or county where the case was decided. There is no filing fee.</li>
   <li>Include a copy of the warrant, summons or indictment if you can get it, plus the arrest date, arresting agency, disposition date, case number, your date of birth, and the name you used when you were arrested.</li>
   <li>Send a copy to the Commonwealth's Attorney for that city or county, by hand or first-class mail. They have 30 days to object or agree.</li>
   <li>Ask the Central Criminal Records Exchange (Virginia State Police) to send your criminal history to the court.</li>
-  <li>The judge may hold a hearing. If the prosecutor agrees in writing that you are eligible, the judge can seal without one.</li></ol></div>`;
-const EXP = `<p>If this charge did not end in a conviction, you may be able to ask for <b>expungement</b> under § 19.2-392.2, which is a separate process. A legal aid office can help.</p>`;
+  <li>The judge may hold a hearing. If the prosecutor agrees in writing that you are eligible, the judge can seal without one.</li></ol></div>`,
+  `<div class="box"><h3>Cómo presentar una petición</h3><ol>
+  <li>Preséntela en el tribunal de circuito (circuit court) de la ciudad o condado donde se resolvió el caso. No hay cargo por presentarla.</li>
+  <li>Incluya una copia de la orden de arresto, la citación o la acusación formal si puede conseguirla, además de la fecha del arresto, la agencia que lo arrestó, la fecha de la resolución, el número de caso, su fecha de nacimiento y el nombre que usaba cuando lo arrestaron.</li>
+  <li>Envíe una copia al fiscal (Commonwealth's Attorney) de esa ciudad o condado, en persona o por correo de primera clase. Tiene 30 días para oponerse o estar de acuerdo.</li>
+  <li>Pida al Central Criminal Records Exchange (Policía Estatal de Virginia) que envíe su historial penal al tribunal.</li>
+  <li>El juez puede hacer una audiencia. Si el fiscal acepta por escrito que usted es elegible, el juez puede sellar sin audiencia.</li></ol></div>`);
+const EXP = () => S(`<p>If this charge did not end in a conviction, you may be able to ask for <b>expungement</b> under § 19.2-392.2, which is a separate process. A legal aid office can help.</p>`,
+  `<p>Si este cargo no terminó en condena, quizás pueda pedir la <b>eliminación del récord (expungement)</b> bajo § 19.2-392.2, que es un proceso aparte. Una oficina de asistencia legal puede ayudarle.</p>`);
+const DEFFLAG = () => S('The section’s title mentions people with no deferred dismissals, but its text only counts convictions. Your unsealed deferred dismissal could keep this record from being sealed. Confirm with an attorney.',
+  'El título de la sección menciona a personas sin desestimaciones diferidas, pero su texto solo cuenta las condenas. Su desestimación diferida sin sellar podría impedir que se selle este récord. Confírmelo con un abogado.');
+const TRAFFIC_BODY = () => S(`<p>Traffic infractions that aren’t crimes are treated as sealed 11 years after the case ends. You don’t need to do anything.</p><p>The DMV can keep the record longer if federal rules require it, or if you are within 2 years of finishing a Driver Improvement suspension.</p>`,
+  `<p>Las infracciones de tránsito que no son delitos se consideran selladas 11 años después de que termina el caso. No necesita hacer nada.</p><p>El DMV puede conservar el récord por más tiempo si las reglas federales lo exigen, o si han pasado menos de 2 años desde que cumplió una suspensión del programa Driver Improvement.</p>`);
 
 const R = {
-  juv:()=>({cat:'ne', h:'This sealing law doesn’t cover this record', body:`<p>Virginia's sealing law applies to adults and to juveniles who were tried as adults in circuit court. Juvenile court records follow different rules.</p>`, cite:'§ 19.2-392.5(B)'}),
-  mj:()=>({cat:'ar', h:'This record is sealed by law', body:`<p>Every charge or conviction for simple possession of marijuana under former § 18.2-250.1 is sealed without a court order, no matter when it happened. Courts, police and the State Police must find and seal these records themselves.</p><p>The DMV may keep a copy where federal rules require it.</p>`, cite:'§ 19.2-392.6:1'}),
-  pend:()=>({cat:'pend', h:'Come back when the case is finished', body:`<p>Sealing depends on how a case ends. Run this guide again after the court enters a final disposition.</p>`}),
-  pre86:()=>({cat:'ne', h:'This record is too old for sealing', body:`<p>Sealing under this law covers offenses that happened on or after January 1, 1986. Older records can’t be sealed under these sections.</p>`, cite:'§§ 19.2-392.6, 19.2-392.12, 19.2-392.12:1, 19.2-392.17'}),
-  tr_now:a=>({cat:'ar', h:'This traffic infraction is treated as sealed', date:addY(parseD(a.dispDate),11), dl:'Sealed since', body:`<p>Traffic infractions that aren’t crimes are treated as sealed 11 years after the case ends. You don’t need to do anything.</p><p>The DMV can keep the record longer if federal rules require it, or if you are within 2 years of finishing a Driver Improvement suspension.</p>`, cite:'§ 19.2-392.17'}),
-  tr_later:a=>({cat:'at', h:'This traffic infraction will be sealed automatically', date:addY(parseD(a.dispDate),11), dl:'Sealed on', body:`<p>Traffic infractions that aren’t crimes are treated as sealed 11 years after the case ends. You don’t need to do anything.</p><p>The DMV can keep the record longer if federal rules require it, or if you are within 2 years of finishing a Driver Improvement suspension.</p>`, cite:'§ 19.2-392.17'}),
-  anc_pr:()=>({cat:'pr', h:'You can ask the court to seal this now', body:`<p>When the main charge was sealed automatically, the court <b>must</b> seal related violations, contempt, failure-to-appear charges and bail appeals if you file a petition. There is no waiting period and no limit on how many of these you file.</p>${HOWTO}`, cite:'§ 19.2-392.12:1(B), (J)'}),
-  anc_ne:()=>({cat:'ne', h:'No section clearly covers this', body:`<p>The law lets you petition to seal related matters when the main charge was sealed automatically or by petition. It doesn’t clearly cover a main charge the judge sealed at acquittal or dismissal. Ask a legal aid office or an attorney how to handle this one.</p>`, cite:'§§ 19.2-392.8, 19.2-392.12:1(B)'}),
-  anc_pet:()=>({cat:'info', h:'This should have been part of your earlier petition', body:`<p>A sealing petition for a charge can also ask to seal related violations, contempt, failure-to-appear charges and bail appeals. If this matter wasn’t listed, ask the court or an attorney whether you can file again to add it.</p>`, cite:'§§ 19.2-392.12(A), 19.2-392.12:1(A)'}),
-  anc_link:()=>({cat:'info', h:'Check the main charge first', body:`<p>This matter follows the main charge it is tied to. Start over and run this guide for the main charge.</p><ul><li>If the main charge is sealed automatically, come back. You can then petition to seal this matter with no wait.</li><li>If the main charge needs a petition, list this matter in that same petition.</li></ul>`}),
-  fel_ar:()=>({cat:'ar', h:'This record was sealed when the case ended', body:`<p>Because you asked at the hearing and the prosecutor agreed, the court ordered this felony record sealed.</p>`, cite:'§ 19.2-392.8(B)'}),
-  exp:a=>({cat:'ne', h:'This record can’t be sealed under the sealing law', body:(a.level==='fel' && (a.disp==='acq'||a.disp==='dwp') ? `<p>A felony acquittal or dismissal with prejudice is sealed only when you ask the judge at the hearing and the prosecutor agrees.</p>` : `<p>The sealing law doesn’t cover a felony that was nolle prossed or dismissed without prejudice.</p>`)+EXP, cite:'§ 19.2-392.8'}),
-  mis_ar:()=>({cat:'ar', h:'This record was sealed when the case ended', body:`<p>The court ordered this misdemeanor sealed at the time of the acquittal or dismissal.</p>`, cite:'§ 19.2-392.8(A)'}),
-  pre86_exp:()=>({cat:'ne', h:'This record is too old for sealing', body:`<p>Automatic sealing of misdemeanor dismissals covers offenses on or after January 1, 1986.</p>${EXP}`, cite:'§ 19.2-392.11'}),
-  conv_block:()=>({cat:'ne', h:'Not eligible while other convictions remain unsealed', body:`<p>Misdemeanor acquittals and dismissals are sealed automatically only for people with no unsealed convictions. Check each of your convictions with this guide. If they get sealed, this record may then qualify.</p>${EXP}`, cite:'§ 19.2-392.11(A)', recheck:true}),
-  sweep_now:a=>({cat:'ar', h:'This record will be sealed at the next annual review', body:`<p>Once a year, the State Police find misdemeanor acquittals, nolle prosequis and dismissals for people with no unsealed convictions and no arrests or charges in the past 3 years. A judge then orders them sealed. You don’t need to do anything.</p><p>If the State Police can’t confirm eligibility from their records, they may skip a case. If it isn’t sealed after a year, ask a legal aid office about your options.</p>`, cite:'§ 19.2-392.11', flag: a.priorConv==='defonly' ? 'The section’s title mentions people with no deferred dismissals, but its text only counts convictions. Your unsealed deferred dismissal could keep this record from being sealed. Confirm with an attorney.' : null}),
-  sweep_later:a=>({cat:'at', h:'This record will be sealed automatically later', date:addY(parseD(a.lastArrest),3), dl:'Eligible for the annual review after', body:`<p>You need 3 years with no new arrests or charges. After that date, the next annual State Police review should pick it up. You don’t need to do anything.</p><p>A new arrest or charge before then pushes the date back. A new conviction stops it until that conviction is sealed.</p>`, cite:'§ 19.2-392.11', flag: a.priorConv==='defonly' ? 'The section’s title mentions people with no deferred dismissals, but its text only counts convictions. Your unsealed deferred dismissal could keep this record from being sealed. Confirm with an attorney.' : null}),
-  auto_now:a=>({cat:'ar', h:'This conviction should be sealed automatically', date:addY(parseD(a.dispDate),7), dl:'Eligible since', body:`<p>Seven years have passed with no new convictions, so the State Police monthly review should find this conviction, and a judge will order it sealed. You don’t need to do anything.</p><p>If it still isn’t sealed, you can file a free petition. The court must grant it if you qualify. The State Police skip cases they can’t confirm electronically, or where you were charged outside Virginia during those 7 years.</p>${HOWTO}`, cite:'§§ 19.2-392.6, 19.2-392.7; backup: § 19.2-392.12:1'}),
-  auto_later:a=>({cat:'at', h:'This conviction will be sealed automatically later', date:addY(parseD(a.dispDate),7), dl:'Sealed after', body:`<p>If you aren’t convicted of anything else before this date, the State Police monthly review should find this conviction, and a judge will order it sealed.</p><p>A new conviction (other than a traffic infraction) before then means it won’t be sealed automatically. If that happens, run this guide again.</p><p>If it isn’t sealed a few months after the date, you can file a free petition instead.</p>`, cite:'§§ 19.2-392.6, 19.2-392.7'}),
-  p121_now:a=>({cat:'pr', h:'You can ask the court to seal this now', date:addY(parseD(a.dispDate),7), dl:'Eligible since', body:`<p>This ${a.disp==='def'?'deferred dismissal':'conviction'} isn’t sealed automatically, but you can file a petition. The court <b>must</b> grant it because 7 years have passed with no new convictions. It’s free, there’s no limit on how many of these you file, and it doesn’t count toward the two-petition lifetime limit.</p>${HOWTO}`, cite:'§ 19.2-392.12:1(A), (I)'}),
-  p121_later:a=>({cat:'pt', h:'You can ask the court to seal this later', date:addY(parseD(a.dispDate),7), dl:'You can file on or after', body:`<p>On this date, you can file a petition, and the court <b>must</b> grant it, as long as you aren’t convicted of anything else (other than a traffic infraction) before then. It’s free and doesn’t count toward the two-petition lifetime limit.</p>${HOWTO}`, cite:'§ 19.2-392.12:1(A), (I)'}),
-  e_level:()=>({cat:'ne', h:'This offense level can’t be sealed', body:`<p>Sealing by petition covers misdemeanors, Class 5 and 6 felonies, and grand larceny. Class 1 to 4 felonies and unclassified felonies aren’t covered.</p>`, cite:'§ 19.2-392.12(A)'}),
-  e_excl:()=>({cat:'ne', h:'This offense is excluded from sealing', body:`<p>The law lists offenses that can’t be sealed by petition, and this is one of them.</p>`, cite:'§ 19.2-392.12(L)'}),
-  e_cond:a=>({cat:'ne', h:'Not eligible right now', body:`<p>This record can’t be sealed while the following is true:</p><ul>${a.gun?'<li>Your gun rights haven’t been restored after a felony involving a firearm.</li>':''}${a.animal?'<li>A court ban on owning a companion animal is still in effect.</li>':''}${a.dog?'<li>You still own the dangerous or vicious dog involved.</li>':''}</ul><p>Once that changes, run this guide again.</p>`, cite:'§ 19.2-392.12(L)(4), (13), (14)', recheck:true}),
-  e_limit:()=>({cat:'ne', h:'You’ve reached the lifetime limit', body:`<p>A person can have only two general sealing petitions granted in their lifetime. Records on the minor-offense list can still be sealed through the separate petition that has no limit.</p>`, cite:'§ 19.2-392.12(C), (F)(5)'}),
-  e_c12:()=>({cat:'ne', h:'Not eligible for sealing by petition', body:`<p>Anyone ever convicted of a Class 1 or 2 felony, or a felony punishable by life in prison, can’t use the general sealing petition.</p>`, cite:'§ 19.2-392.12(F)(1)'}),
-  e_clean:()=>({cat:'ne', h:'A new conviction blocks this petition', body:`<p>The petition requires a full waiting period with no new convictions (other than traffic infractions). A conviction during that period appears to rule it out. Ask an attorney how a court would read your situation.</p>`, cite:'§ 19.2-392.12(F)(2)'}),
-  p12_now:a=>({cat:'pr', h:'You may be able to have this sealed now', date:A.E, dl:'Eligible since', body:`<p>You meet the basic requirements for a sealing petition. Unlike the other petitions, the judge has to decide whether keeping this record public causes, or could cause, a <b>manifest injustice</b> to you, such as trouble getting a job or housing. Be ready to explain how it affects you.</p>${a.subst==='yes'?'<p>Because the offense involved alcohol or drugs, you’ll also need to show you’ve been rehabilitated, such as with treatment records or a long period of sobriety.</p>':''}<p>This uses one of your two lifetime grants under this section${a.prior12==='1'?', and it would be your last':''}.</p>${HOWTO}`, cite:'§ 19.2-392.12'}),
-  p12_later:a=>{ const owe = a.rest==='unpaid'; const dateReached = A.E<=TODAY;
-    return {cat:'pt', h:'You may be able to petition later', date: dateReached?null:A.E, dl:'You can file on or after',
-    body:`<p>${dateReached ? 'The waiting period is over, but you can’t file until restitution in this case is paid in full.' : 'You can file a sealing petition once you reach this date'+(owe?' and have paid restitution in full.':', if you aren’t convicted of anything else first.')}</p>
-    <p>The date is the latest of: ${a.cls==='misd'?'7':'10'} years after ${fmt(A.S)}${a.f34?', 20 years after your last Class 3 or 4 felony conviction':''}${a.fOther?', and 10 years after your last other felony conviction':''}.</p>
-    <p>When you file, the judge must also find that keeping this record public causes, or could cause, a manifest injustice to you.${a.subst==='yes'?' Because alcohol or drugs were involved, you’ll need to show rehabilitation.':''}</p>${HOWTO}`, cite:'§ 19.2-392.12(F)'}; }
+  juv:()=>({cat:'ne', h:S('This sealing law doesn’t cover this record','Esta ley de sellado no cubre este récord'), body:S(`<p>Virginia's sealing law applies to adults and to juveniles who were tried as adults in circuit court. Juvenile court records follow different rules.</p>`,`<p>La ley de sellado de Virginia aplica a adultos y a menores de edad juzgados como adultos en un tribunal de circuito. Los récords del tribunal de menores siguen otras reglas.</p>`), cite:'§ 19.2-392.5(B)'}),
+  mj:()=>({cat:'ar', h:S('This record is sealed by law','Este récord está sellado por ley'), body:S(`<p>Every charge or conviction for simple possession of marijuana under former § 18.2-250.1 is sealed without a court order, no matter when it happened. Courts, police and the State Police must find and seal these records themselves.</p><p>The DMV may keep a copy where federal rules require it.</p>`,`<p>Todo cargo o condena por posesión simple de marihuana bajo el antiguo § 18.2-250.1 se sella sin orden judicial, sin importar cuándo ocurrió. Los tribunales, la policía y la Policía Estatal deben encontrar y sellar estos récords por su cuenta.</p><p>El DMV puede conservar una copia cuando las reglas federales lo exigen.</p>`), cite:'§ 19.2-392.6:1'}),
+  pend:()=>({cat:'pend', h:S('Come back when the case is finished','Vuelva cuando termine el caso'), body:S(`<p>Sealing depends on how a case ends. Run this guide again after the court enters a final disposition.</p>`,`<p>El sellado depende de cómo termina un caso. Use esta guía otra vez después de que el tribunal dicte una resolución final.</p>`)}),
+  pre86:()=>({cat:'ne', h:S('This record is too old for sealing','Este récord es demasiado antiguo para sellarse'), body:S(`<p>Sealing under this law covers offenses that happened on or after January 1, 1986. Older records can’t be sealed under these sections.</p>`,`<p>El sellado bajo esta ley cubre delitos que ocurrieron el 1 de enero de 1986 o después. Los récords más antiguos no se pueden sellar bajo estas secciones.</p>`), cite:'§§ 19.2-392.6, 19.2-392.12, 19.2-392.12:1, 19.2-392.17'}),
+  tr_now:a=>({cat:'ar', h:S('This traffic infraction is treated as sealed','Esta infracción de tránsito se considera sellada'), date:addY(parseD(a.dispDate),11), dl:S('Sealed since','Sellada desde'), body:TRAFFIC_BODY(), cite:'§ 19.2-392.17'}),
+  tr_later:a=>({cat:'at', h:S('This traffic infraction will be sealed automatically','Esta infracción de tránsito se sellará automáticamente'), date:addY(parseD(a.dispDate),11), dl:S('Sealed on','Se sellará el'), body:TRAFFIC_BODY(), cite:'§ 19.2-392.17'}),
+  anc_pr:()=>({cat:'pr', h:S('You can ask the court to seal this now','Puede pedirle al tribunal que lo selle ahora'), body:S(`<p>When the main charge was sealed automatically, the court <b>must</b> seal related violations, contempt, failure-to-appear charges and bail appeals if you file a petition. There is no waiting period and no limit on how many of these you file.</p>`,`<p>Cuando el cargo principal se selló automáticamente, el tribunal <b>debe</b> sellar las violaciones, desacatos, cargos por no comparecer y apelaciones de fianza relacionados si usted presenta una petición. No hay período de espera ni límite en cuántas de estas puede presentar.</p>`)+HOWTO(), cite:'§ 19.2-392.12:1(B), (J)'}),
+  anc_ne:()=>({cat:'ne', h:S('No section clearly covers this','Ninguna sección cubre esto con claridad'), body:S(`<p>The law lets you petition to seal related matters when the main charge was sealed automatically or by petition. It doesn’t clearly cover a main charge the judge sealed at acquittal or dismissal. Ask a legal aid office or an attorney how to handle this one.</p>`,`<p>La ley le permite pedir que se sellen asuntos relacionados cuando el cargo principal se selló automáticamente o por petición. No cubre con claridad un cargo principal que el juez selló al absolverlo o desestimar el caso. Pregunte a una oficina de asistencia legal o a un abogado cómo manejar este caso.</p>`), cite:'§§ 19.2-392.8, 19.2-392.12:1(B)'}),
+  anc_pet:()=>({cat:'info', h:S('This should have been part of your earlier petition','Esto debió incluirse en su petición anterior'), body:S(`<p>A sealing petition for a charge can also ask to seal related violations, contempt, failure-to-appear charges and bail appeals. If this matter wasn’t listed, ask the court or an attorney whether you can file again to add it.</p>`,`<p>Una petición de sellado para un cargo también puede pedir que se sellen violaciones, desacatos, cargos por no comparecer y apelaciones de fianza relacionados. Si este asunto no se incluyó, pregunte al tribunal o a un abogado si puede presentar otra petición para agregarlo.</p>`), cite:'§§ 19.2-392.12(A), 19.2-392.12:1(A)'}),
+  anc_link:()=>({cat:'info', h:S('Check the main charge first','Primero revise el cargo principal'), body:S(`<p>This matter follows the main charge it is tied to. Start over and run this guide for the main charge.</p><ul><li>If the main charge is sealed automatically, come back. You can then petition to seal this matter with no wait.</li><li>If the main charge needs a petition, list this matter in that same petition.</li></ul>`,`<p>Este asunto sigue al cargo principal con el que está relacionado. Empiece de nuevo y use esta guía para el cargo principal.</p><ul><li>Si el cargo principal se sella automáticamente, regrese. Entonces podrá pedir que se selle este asunto sin esperar.</li><li>Si el cargo principal necesita una petición, incluya este asunto en esa misma petición.</li></ul>`)}),
+  fel_ar:()=>({cat:'ar', h:S('This record was sealed when the case ended','Este récord se selló cuando terminó el caso'), body:S(`<p>Because you asked at the hearing and the prosecutor agreed, the court ordered this felony record sealed.</p>`,`<p>Como usted lo pidió en la audiencia y el fiscal estuvo de acuerdo, el tribunal ordenó sellar este récord de delito grave.</p>`), cite:'§ 19.2-392.8(B)'}),
+  exp:a=>({cat:'ne', h:S('This record can’t be sealed under the sealing law','Este récord no se puede sellar bajo la ley de sellado'), body:(a.level==='fel' && (a.disp==='acq'||a.disp==='dwp') ? S(`<p>A felony acquittal or dismissal with prejudice is sealed only when you ask the judge at the hearing and the prosecutor agrees.</p>`,`<p>Una absolución o desestimación con perjuicio de un delito grave se sella solo cuando usted lo pide al juez en la audiencia y el fiscal está de acuerdo.</p>`) : S(`<p>The sealing law doesn’t cover a felony that was nolle prossed or dismissed without prejudice.</p>`,`<p>La ley de sellado no cubre un delito grave que terminó en nolle prosequi o que se desestimó sin perjuicio.</p>`))+EXP(), cite:'§ 19.2-392.8'}),
+  mis_ar:()=>({cat:'ar', h:S('This record was sealed when the case ended','Este récord se selló cuando terminó el caso'), body:S(`<p>The court ordered this misdemeanor sealed at the time of the acquittal or dismissal.</p>`,`<p>El tribunal ordenó sellar este delito menor al momento de la absolución o desestimación.</p>`), cite:'§ 19.2-392.8(A)'}),
+  pre86_exp:()=>({cat:'ne', h:S('This record is too old for sealing','Este récord es demasiado antiguo para sellarse'), body:S(`<p>Automatic sealing of misdemeanor dismissals covers offenses on or after January 1, 1986.</p>`,`<p>El sellado automático de desestimaciones de delitos menores cubre delitos del 1 de enero de 1986 o después.</p>`)+EXP(), cite:'§ 19.2-392.11'}),
+  conv_block:()=>({cat:'ne', h:S('Not eligible while other convictions remain unsealed','No es elegible mientras haya otras condenas sin sellar'), body:S(`<p>Misdemeanor acquittals and dismissals are sealed automatically only for people with no unsealed convictions. Check each of your convictions with this guide. If they get sealed, this record may then qualify.</p>`,`<p>Las absoluciones y desestimaciones de delitos menores se sellan automáticamente solo para personas sin condenas sin sellar. Revise cada una de sus condenas con esta guía. Si se sellan, este récord podría calificar después.</p>`)+EXP(), cite:'§ 19.2-392.11(A)'}),
+  sweep_now:a=>({cat:'ar', h:S('This record will be sealed at the next annual review','Este récord se sellará en la próxima revisión anual'), body:S(`<p>Once a year, the State Police find misdemeanor acquittals, nolle prosequis and dismissals for people with no unsealed convictions and no arrests or charges in the past 3 years. A judge then orders them sealed. You don’t need to do anything.</p><p>If the State Police can’t confirm eligibility from their records, they may skip a case. If it isn’t sealed after a year, ask a legal aid office about your options.</p>`,`<p>Una vez al año, la Policía Estatal identifica absoluciones, nolle prosequis y desestimaciones de delitos menores de personas sin condenas sin sellar y sin arrestos ni cargos en los últimos 3 años. Luego un juez ordena sellarlos. No necesita hacer nada.</p><p>Si la Policía Estatal no puede confirmar la elegibilidad con sus récords, puede omitir un caso. Si no se ha sellado después de un año, pregunte a una oficina de asistencia legal sobre sus opciones.</p>`), cite:'§ 19.2-392.11', flag: a.priorConv==='defonly' ? DEFFLAG() : null}),
+  sweep_later:a=>({cat:'at', h:S('This record will be sealed automatically later','Este récord se sellará automáticamente más adelante'), date:addY(parseD(a.lastArrest),3), dl:S('Eligible for the annual review after','Elegible para la revisión anual después del'), body:S(`<p>You need 3 years with no new arrests or charges. After that date, the next annual State Police review should pick it up. You don’t need to do anything.</p><p>A new arrest or charge before then pushes the date back. A new conviction stops it until that conviction is sealed.</p>`,`<p>Necesita 3 años sin nuevos arrestos ni cargos. Después de esa fecha, la siguiente revisión anual de la Policía Estatal debería incluirlo. No necesita hacer nada.</p><p>Un nuevo arresto o cargo antes de esa fecha la retrasa. Una nueva condena lo detiene hasta que esa condena se selle.</p>`), cite:'§ 19.2-392.11', flag: a.priorConv==='defonly' ? DEFFLAG() : null}),
+  auto_now:a=>({cat:'ar', h:S('This conviction should be sealed automatically','Esta condena debería sellarse automáticamente'), date:addY(parseD(a.dispDate),7), dl:S('Eligible since','Elegible desde'), body:S(`<p>Seven years have passed with no new convictions, so the State Police monthly review should find this conviction, and a judge will order it sealed. You don’t need to do anything.</p><p>If it still isn’t sealed, you can file a free petition. The court must grant it if you qualify. The State Police skip cases they can’t confirm electronically, or where you were charged outside Virginia during those 7 years.</p>`,`<p>Han pasado siete años sin nuevas condenas, así que la revisión mensual de la Policía Estatal debería encontrar esta condena, y un juez ordenará sellarla. No necesita hacer nada.</p><p>Si aún no se ha sellado, puede presentar una petición gratuita. El tribunal debe concederla si usted califica. La Policía Estatal omite casos que no puede confirmar electrónicamente, o en los que a usted lo acusaron fuera de Virginia durante esos 7 años.</p>`)+HOWTO(), cite:S('§§ 19.2-392.6, 19.2-392.7; backup: § 19.2-392.12:1','§§ 19.2-392.6, 19.2-392.7; alternativa: § 19.2-392.12:1')}),
+  auto_later:a=>({cat:'at', h:S('This conviction will be sealed automatically later','Esta condena se sellará automáticamente más adelante'), date:addY(parseD(a.dispDate),7), dl:S('Sealed after','Se sellará después del'), body:S(`<p>If you aren’t convicted of anything else before this date, the State Police monthly review should find this conviction, and a judge will order it sealed.</p><p>A new conviction (other than a traffic infraction) before then means it won’t be sealed automatically. If that happens, run this guide again.</p><p>If it isn’t sealed a few months after the date, you can file a free petition instead.</p>`,`<p>Si no lo condenan por ningún otro delito antes de esta fecha, la revisión mensual de la Policía Estatal debería encontrar esta condena, y un juez ordenará sellarla.</p><p>Una nueva condena (que no sea una infracción de tránsito) antes de esa fecha significa que no se sellará automáticamente. Si eso pasa, use esta guía otra vez.</p><p>Si no se ha sellado unos meses después de la fecha, puede presentar una petición gratuita.</p>`), cite:'§§ 19.2-392.6, 19.2-392.7'}),
+  p121_now:a=>({cat:'pr', h:S('You can ask the court to seal this now','Puede pedirle al tribunal que lo selle ahora'), date:addY(parseD(a.dispDate),7), dl:S('Eligible since','Elegible desde'), body:S(`<p>This ${a.disp==='def'?'deferred dismissal':'conviction'} isn’t sealed automatically, but you can file a petition. The court <b>must</b> grant it because 7 years have passed with no new convictions. It’s free, there’s no limit on how many of these you file, and it doesn’t count toward the two-petition lifetime limit.</p>`,`<p>Esta ${a.disp==='def'?'desestimación diferida':'condena'} no se sella automáticamente, pero usted puede presentar una petición. El tribunal <b>debe</b> concederla porque han pasado 7 años sin nuevas condenas. Es gratis, no hay límite en cuántas de estas puede presentar, y no cuenta para el límite de dos peticiones en la vida.</p>`)+HOWTO(), cite:'§ 19.2-392.12:1(A), (I)'}),
+  p121_later:a=>({cat:'pt', h:S('You can ask the court to seal this later','Puede pedirle al tribunal que lo selle más adelante'), date:addY(parseD(a.dispDate),7), dl:S('You can file on or after','Puede presentarla a partir del'), body:S(`<p>On this date, you can file a petition, and the court <b>must</b> grant it, as long as you aren’t convicted of anything else (other than a traffic infraction) before then. It’s free and doesn’t count toward the two-petition lifetime limit.</p>`,`<p>A partir de esta fecha puede presentar una petición, y el tribunal <b>debe</b> concederla, siempre que no lo condenen por ningún otro delito (que no sea una infracción de tránsito) antes de esa fecha. Es gratis y no cuenta para el límite de dos peticiones en la vida.</p>`)+HOWTO(), cite:'§ 19.2-392.12:1(A), (I)'}),
+  e_level:()=>({cat:'ne', h:S('This offense level can’t be sealed','Este nivel de delito no se puede sellar'), body:S(`<p>Sealing by petition covers misdemeanors, Class 5 and 6 felonies, and grand larceny. Class 1 to 4 felonies and unclassified felonies aren’t covered.</p>`,`<p>El sellado por petición cubre delitos menores, delitos graves de Clase 5 y 6, y hurto mayor. Los delitos graves de Clase 1 a 4 y los delitos graves sin clasificar no están cubiertos.</p>`), cite:'§ 19.2-392.12(A)'}),
+  e_excl:()=>({cat:'ne', h:S('This offense is excluded from sealing','Este delito está excluido del sellado'), body:S(`<p>The law lists offenses that can’t be sealed by petition, and this is one of them.</p>`,`<p>La ley enumera delitos que no se pueden sellar por petición, y este es uno de ellos.</p>`), cite:'§ 19.2-392.12(L)'}),
+  e_cond:a=>({cat:'ne', h:S('Not eligible right now','No es elegible en este momento'), body:S(`<p>This record can’t be sealed while the following is true:</p>`,`<p>Este récord no se puede sellar mientras esto siga siendo cierto:</p>`)+`<ul>${a.gun?S('<li>Your gun rights haven’t been restored after a felony involving a firearm.</li>','<li>No le han restaurado el derecho a tener armas después de un delito grave con arma de fuego.</li>'):''}${a.animal?S('<li>A court ban on owning a companion animal is still in effect.</li>','<li>Sigue vigente una prohibición judicial de tener un animal de compañía.</li>'):''}${a.dog?S('<li>You still own the dangerous or vicious dog involved.</li>','<li>Todavía es dueño del perro peligroso o agresivo involucrado.</li>'):''}</ul>`+S(`<p>Once that changes, run this guide again.</p>`,`<p>Cuando eso cambie, use esta guía otra vez.</p>`), cite:'§ 19.2-392.12(L)(4), (13), (14)'}),
+  e_limit:()=>({cat:'ne', h:S('You’ve reached the lifetime limit','Ya alcanzó el límite de por vida'), body:S(`<p>A person can have only two general sealing petitions granted in their lifetime. Records on the minor-offense list can still be sealed through the separate petition that has no limit.</p>`,`<p>A una persona solo se le pueden conceder dos peticiones generales de sellado en su vida. Los récords de la lista de delitos menores aún se pueden sellar con la petición aparte que no tiene límite.</p>`), cite:'§ 19.2-392.12(C), (F)(5)'}),
+  e_c12:()=>({cat:'ne', h:S('Not eligible for sealing by petition','No es elegible para sellado por petición'), body:S(`<p>Anyone ever convicted of a Class 1 or 2 felony, or a felony punishable by life in prison, can’t use the general sealing petition.</p>`,`<p>Nadie que haya sido condenado alguna vez por un delito grave de Clase 1 o 2, o por un delito grave castigado con cadena perpetua, puede usar la petición general de sellado.</p>`), cite:'§ 19.2-392.12(F)(1)'}),
+  e_clean:()=>({cat:'ne', h:S('A new conviction blocks this petition','Una nueva condena impide esta petición'), body:S(`<p>The petition requires a full waiting period with no new convictions (other than traffic infractions). A conviction during that period appears to rule it out. Ask an attorney how a court would read your situation.</p>`,`<p>La petición requiere un período de espera completo sin nuevas condenas (que no sean infracciones de tránsito). Una condena durante ese período parece descartarla. Pregunte a un abogado cómo interpretaría un tribunal su situación.</p>`), cite:'§ 19.2-392.12(F)(2)'}),
+  p12_now:a=>({cat:'pr', h:S('You may be able to have this sealed now','Es posible que pueda sellarlo ahora'), date:A.E, dl:S('Eligible since','Elegible desde'),
+    body:S(`<p>You meet the basic requirements for a sealing petition. Unlike the other petitions, the judge has to decide whether keeping this record public causes, or could cause, a <b>manifest injustice</b> to you, such as trouble getting a job or housing. Be ready to explain how it affects you.</p>`,`<p>Usted cumple los requisitos básicos para una petición de sellado. A diferencia de las otras peticiones, el juez tiene que decidir si mantener este récord público le causa, o podría causarle, una <b>injusticia manifiesta</b>, como problemas para conseguir trabajo o vivienda. Esté listo para explicar cómo le afecta.</p>`)
+      +(a.subst==='yes'?S('<p>Because the offense involved alcohol or drugs, you’ll also need to show you’ve been rehabilitated, such as with treatment records or a long period of sobriety.</p>','<p>Como el delito involucró alcohol o drogas, también tendrá que demostrar que se ha rehabilitado, por ejemplo con récords de tratamiento o un largo período de sobriedad.</p>'):'')
+      +S(`<p>This uses one of your two lifetime grants under this section${a.prior12==='1'?', and it would be your last':''}.</p>`,`<p>Esto usa una de las dos peticiones que se le pueden conceder en su vida bajo esta sección${a.prior12==='1'?', y sería la última':''}.</p>`)+HOWTO(), cite:'§ 19.2-392.12'}),
+  p12_later:a=>{ const owe = a.rest==='unpaid'; const dateReached = A.E<=TODAY; const yrs = a.cls==='misd'?'7':'10';
+    const first = dateReached ? S('The waiting period is over, but you can’t file until restitution in this case is paid in full.','El período de espera terminó, pero no puede presentarla hasta que la restitución de este caso esté pagada por completo.')
+      : S('You can file a sealing petition once you reach this date'+(owe?' and have paid restitution in full.':', if you aren’t convicted of anything else first.'), 'Puede presentar una petición de sellado al llegar a esta fecha'+(owe?' y después de pagar la restitución por completo.':', si antes no lo condenan por ningún otro delito.'));
+    const basis = S(`The date is the latest of: ${yrs} years after ${fmt(A.S)}${a.f34?', 20 years after your last Class 3 or 4 felony conviction':''}${a.fOther?', and 10 years after your last other felony conviction':''}.`,
+      `La fecha es la más tardía de estas: ${yrs} años después del ${fmt(A.S)}${a.f34?', 20 años después de su última condena por delito grave de Clase 3 o 4':''}${a.fOther?', y 10 años después de su última condena por otro delito grave':''}.`);
+    const judge = S('When you file, the judge must also find that keeping this record public causes, or could cause, a manifest injustice to you.'+(a.subst==='yes'?' Because alcohol or drugs were involved, you’ll need to show rehabilitation.':''),
+      'Cuando la presente, el juez también debe determinar que mantener este récord público le causa, o podría causarle, una injusticia manifiesta.'+(a.subst==='yes'?' Como hubo alcohol o drogas, tendrá que demostrar su rehabilitación.':''));
+    return {cat:'pt', h:S('You may be able to petition later','Es posible que pueda presentar una petición más adelante'), date: dateReached?null:A.E, dl:S('You can file on or after','Puede presentarla a partir del'),
+    body:`<p>${first}</p><p>${basis}</p><p>${judge}</p>${HOWTO()}`, cite:'§ 19.2-392.12(F)'}; }
 };
 
-const EFFECTS = `<details class="list"><summary>What sealing means for you</summary><ul>
+const EFFECTS = () => S(`<details class="list"><summary>What sealing means for you</summary><ul>
   <li>Most employers, landlords, schools, insurers and government agencies can’t ask about a sealed record, and you can say it didn’t happen.</li>
   <li>You must still disclose it for police jobs, jobs where state or federal law requires the question, and security-clearance positions.</li>
   <li>Courts can still use it at sentencing, bail hearings and child custody cases.</li>
-  <li>Sealing doesn’t restore gun rights or civil rights, and doesn’t cancel fines, costs or restitution.</li></ul></details>`;
+  <li>Sealing doesn’t restore gun rights or civil rights, and doesn’t cancel fines, costs or restitution.</li></ul></details>`,
+  `<details class="list"><summary>Qué significa el sellado para usted</summary><ul>
+  <li>La mayoría de los empleadores, arrendadores, escuelas, aseguradoras y agencias del gobierno no pueden preguntar por un récord sellado, y usted puede decir que no ocurrió.</li>
+  <li>Aún debe revelarlo para trabajos en la policía, trabajos en los que una ley estatal o federal exige la pregunta, y puestos que requieren autorización de seguridad.</li>
+  <li>Los tribunales aún pueden usarlo al dictar sentencia, en audiencias de fianza y en casos de custodia de menores.</li>
+  <li>El sellado no restaura el derecho a tener armas ni los derechos civiles, y no cancela multas, costos ni restitución.</li></ul></details>`);
 
 /* ---------- rendering ---------- */
-const val = (x) => typeof x==='function' ? x(A) : x;
-const optLabel = (node) => { const o = (node.options||[]).find(o=>o.v===A[node.key]); return o ? o.l : ''; };
+const val = (x) => { if(typeof x==='function') x = x(A); if(x && typeof x==='object' && 'en' in x) x = x[LANG]; return x; };
+const optLabel = (node) => { const o = (node.options||[]).find(o=>o.v===A[node.key]); return o ? val(o.l) : ''; };
 
 function trailHTML(){
   if(!hist.length) return '';
   const items = hist.map(id=>{ const n=N[id]; let ans='';
     if(n.type==='choice') ans = optLabel(n);
-    else if(n.type==='form') ans = n.fields.filter(f=>A[f.key]).map(f=>fmt(parseD(A[f.key]))).join(' · ') || 'None';
-    else if(n.type==='checks') ans = n.checks.filter(c=>A[c.key]).map(c=>c.l).join('; ') || 'None of these';
+    else if(n.type==='form') ans = n.fields.filter(f=>A[f.key]).map(f=>fmt(parseD(A[f.key]))).join(' · ') || S('None','Ninguna');
+    else if(n.type==='checks') ans = n.checks.filter(c=>A[c.key]).map(c=>val(c.l)).join('; ') || S('None of these','Ninguno de estos');
     return `<li>${val(n.title)} <b>${ans}</b></li>`; }).join('');
-  return `<div class="trail"><h3>Your answers</h3><ol>${items}</ol></div>`;
+  return `<div class="trail"><h3>${S('Your answers','Sus respuestas')}</h3><ol>${items}</ol></div>`;
 }
 
 function render(focus){
   if(cur.startsWith('R:')) return renderResult(cur.slice(2), focus);
   const n = N[cur];
-  stepcount.textContent = `Question ${hist.length+1}`;
+  stepcount.textContent = S(`Question ${hist.length+1}`, `Pregunta ${hist.length+1}`);
   let inner = '';
   if(n.type==='choice'){
-    inner = `<div class="opts">${n.options.map((o,i)=>`<label class="opt"><input type="radio" name="${n.key}" id="${cur}_${i}" value="${o.v}" ${A[n.key]===o.v?'checked':''}><span>${o.l}${o.h?`<small>${o.h}</small>`:''}</span></label>`).join('')}</div>`;
+    inner = `<div class="opts">${n.options.map((o,i)=>`<label class="opt"><input type="radio" name="${n.key}" id="${cur}_${i}" value="${o.v}" ${A[n.key]===o.v?'checked':''}><span>${val(o.l)}${o.h?`<small>${val(o.h)}</small>`:''}</span></label>`).join('')}</div>`;
   } else if(n.type==='form'){
-    inner = n.fields.map(f=>`<div class="field"><label for="f_${f.key}">${val(f.label)}${f.req?'':' <span class="fhelp">(optional)</span>'}</label><input type="date" id="f_${f.key}" name="${f.key}" value="${A[f.key]||''}" max="${TODAY.toISOString().slice(0,10)}">${f.help?`<span class="fhelp">${f.help}</span>`:''}</div>`).join('');
+    inner = n.fields.map(f=>`<div class="field"><label for="f_${f.key}">${val(f.label)}${f.req?'':` <span class="fhelp">${S('(optional)','(opcional)')}</span>`}</label><input type="date" id="f_${f.key}" name="${f.key}" value="${A[f.key]||''}" max="${TODAY_ISO}" ${f.req?'aria-required="true"':''} ${f.help?`aria-describedby="h_${f.key}"`:''}>${f.help?`<span class="fhelp" id="h_${f.key}">${val(f.help)}</span>`:''}</div>`).join('');
   } else if(n.type==='checks'){
-    inner = `<div class="opts">${n.checks.map(c=>`<label class="opt"><input type="checkbox" id="k_${c.key}" name="${c.key}" ${A[c.key]?'checked':''}><span>${c.l}</span></label>`).join('')}</div>`;
+    inner = `<div class="opts">${n.checks.map(c=>`<label class="opt"><input type="checkbox" id="k_${c.key}" name="${c.key}" ${A[c.key]?'checked':''}><span>${val(c.l)}</span></label>`).join('')}</div>`;
   }
-  stage.innerHTML = `<form class="step" id="stepform" novalidate><fieldset><legend>${val(n.title)}</legend>${n.help?`<p class="help">${n.help}</p>`:''}${n.extra||''}${inner}<p class="err" id="err" hidden></p></fieldset>
-    <div class="btnrow" style="margin-top:22px"><button class="btn btn-primary" type="submit">Continue</button>${hist.length?'<button class="btn btn-ghost" type="button" id="back">Back</button>':''}</div></form>${trailHTML()}`;
+  stage.innerHTML = `<form class="step" id="stepform" novalidate><fieldset ${n.help?'aria-describedby="qhelp"':''}><legend id="qlegend" tabindex="-1"><span class="sr-only">${S(`Question ${hist.length+1}:`,`Pregunta ${hist.length+1}:`)} </span>${val(n.title)}</legend>${n.help?`<p class="help" id="qhelp">${val(n.help)}</p>`:''}${n.extra?val(n.extra):''}${inner}<p class="err" id="err" role="alert" hidden></p></fieldset>
+    <div class="btnrow" style="margin-top:22px"><button class="btn btn-primary" type="submit">${S('Continue','Continuar')}</button>${hist.length?`<button class="btn btn-ghost" type="button" id="back">${S('Back','Atrás')}</button>`:''}</div></form>${trailHTML()}`;
   const form = document.getElementById('stepform');
   form.addEventListener('submit', e=>{ e.preventDefault(); submit(n, form); });
   const b = document.getElementById('back'); if(b) b.addEventListener('click', back);
-  if(focus){ const first = form.querySelector('input'); if(first) first.focus({preventScroll:true}); }
+  if(focus){ const lg = document.getElementById('qlegend'); if(lg) lg.focus({preventScroll:true}); }
 }
 
-function showErr(msg){ const e=document.getElementById('err'); e.textContent=msg; e.hidden=false; }
+function showErr(msg, el){
+  const e=document.getElementById('err'); const form=document.getElementById('stepform');
+  form.querySelectorAll('[aria-invalid]').forEach(x=>{ x.removeAttribute('aria-invalid'); const d=(x.getAttribute('aria-describedby')||'').replace(/\s*err\b/,'').trim(); if(d) x.setAttribute('aria-describedby',d); else x.removeAttribute('aria-describedby'); });
+  e.textContent=''; e.hidden=false; setTimeout(()=>{ e.textContent=msg; }, 30);
+  const target = el || form.querySelector('input');
+  if(target){ if(el){ target.setAttribute('aria-invalid','true'); target.setAttribute('aria-describedby', ((target.getAttribute('aria-describedby')||'')+' err').trim()); } target.focus(); }
+}
 
 function submit(n, form){
   if(n.type==='choice'){
     const c = form.querySelector(`input[name="${n.key}"]:checked`);
-    if(!c) return showErr('Choose one answer to continue.');
+    if(!c) return showErr(S('Choose one answer to continue.','Elija una respuesta para continuar.'));
     A[n.key] = c.value;
   } else if(n.type==='form'){
     for(const f of n.fields){
-      const v = form.querySelector(`#f_${f.key}`).value;
-      if(f.req && !v) return showErr(`Enter the ${val(f.label).toLowerCase()} to continue.`);
-      if(v && !parseD(v)) return showErr(`Check the ${val(f.label).toLowerCase()}. It doesn’t look like a full date.`);
-      if(v && parseD(v)>TODAY) return showErr(`The ${val(f.label).toLowerCase()} can’t be in the future.`);
+      const inp = form.querySelector(`#f_${f.key}`); const v = inp.value; const lb = val(f.label);
+      if(f.req && !v) return showErr(S(`Enter the ${lb.toLowerCase()} to continue.`, `Complete este dato para continuar: ${lb}.`), inp);
+      if(v && !parseD(v)) return showErr(S(`Check the ${lb.toLowerCase()}. It doesn’t look like a full date.`, `Revise este dato: ${lb}. No parece una fecha completa.`), inp);
+      if(v && parseD(v)>TODAY) return showErr(S(`The ${lb.toLowerCase()} can’t be in the future.`, `Este dato no puede ser una fecha futura: ${lb}.`), inp);
     }
     n.fields.forEach(f=>{ A[f.key] = form.querySelector(`#f_${f.key}`).value || ''; });
-    if(A.offDate && A.dispDate && n.fields.some(f=>f.key==='dispDate') && parseD(A.dispDate)<parseD(A.offDate)) return showErr('The disposition date can’t be before the offense date.');
+    if(A.offDate && A.dispDate && n.fields.some(f=>f.key==='dispDate') && parseD(A.dispDate)<parseD(A.offDate)) return showErr(S('The disposition date can’t be before the offense date.','La fecha de la resolución no puede ser anterior a la fecha del delito.'), form.querySelector('#f_dispDate'));
   } else if(n.type==='checks'){
     n.checks.forEach(c=>{ A[c.key] = form.querySelector(`#k_${c.key}`).checked; });
   }
@@ -442,23 +537,38 @@ function restart(){ A = {}; hist = []; cur = 'q1'; render(true); document.getEle
 
 function renderResult(key, focus){
   const r = R[key](A); const c = CAT[r.cat];
-  stepcount.textContent = 'Result';
+  stepcount.textContent = S('Result','Resultado');
   stage.innerHTML = `<div class="result step" style="--c:var(${c.c});--cbg:var(${c.c}-bg)">
-    <span class="badge">${c.l}</span>
-    <h2 tabindex="-1" id="rhead">${r.h}</h2>
+    <span class="badge">${val(c.l)}</span>
+    <h3 class="rh" tabindex="-1" id="rhead">${r.h}</h3>
     ${r.date?`<div class="when"><span class="lbl">${r.dl}</span><span class="date">${fmt(r.date)}</span></div>`:''}
     <div class="body">${r.body}</div>
-    ${r.flag?`<div class="flag"><b>Check this:</b> ${r.flag}</div>`:''}
-    ${r.cite?`<p class="cite">Virginia Code ${r.cite}</p>`:''}
-    ${(r.cat!=='pend' && r.cat!=='info')?EFFECTS:''}
-    <div class="btnrow"><button class="btn btn-primary" type="button" id="again">Check another record</button><button class="btn btn-ghost" type="button" id="back">Change my last answer</button></div>
+    ${r.flag?`<div class="flag"><b>${S('Check this:','Verifique esto:')}</b> ${r.flag}</div>`:''}
+    ${r.cite?`<p class="cite">${S('Virginia Code','Código de Virginia')} ${r.cite}</p>`:''}
+    ${(r.cat!=='pend' && r.cat!=='info')?EFFECTS():''}
+    <div class="btnrow"><button class="btn btn-primary" type="button" id="again">${S('Check another record','Revisar otro récord')}</button><button class="btn btn-ghost" type="button" id="back">${S('Change my last answer','Cambiar mi última respuesta')}</button></div>
   </div>${trailHTML()}`;
   document.getElementById('again').addEventListener('click', restart);
   document.getElementById('back').addEventListener('click', back);
   if(focus) document.getElementById('rhead').focus({preventScroll:true});
 }
 
-document.getElementById('startHere').addEventListener('click', e=>{ e.preventDefault(); document.getElementById('tool').scrollIntoView({behavior:'smooth', block:'start'}); const i = stage.querySelector('input'); if(i) i.focus({preventScroll:true}); });
+/* ---------- language ---------- */
+const TITLES = {en:'Can My Virginia Record Be Sealed?', es:'¿Se puede sellar mi récord en Virginia?'};
+function setLang(l, rerender){
+  LANG = l;
+  document.documentElement.lang = l;
+  document.title = TITLES[l];
+  document.getElementById('lang-en').setAttribute('aria-pressed', String(l==='en'));
+  document.getElementById('lang-es').setAttribute('aria-pressed', String(l==='es'));
+  try { localStorage.setItem('sealing-lang', l); } catch(e){}
+  if(rerender) render(false);
+}
+document.getElementById('lang-en').addEventListener('click', ()=>setLang('en', true));
+document.getElementById('lang-es').addEventListener('click', ()=>setLang('es', true));
+
+document.getElementById('startHere').addEventListener('click', e=>{ e.preventDefault(); document.getElementById('tool').scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth', block:'start'}); const i = document.getElementById('qlegend') || document.getElementById('rhead'); if(i) i.focus({preventScroll:true}); });
+setLang(LANG, false);
 render(false);
 })();
 </script>
