@@ -57,7 +57,7 @@ td:first-child{font-family:var(--mono);white-space:nowrap;color:var(--accent);fo
 <header>
   <div class="eyebrow">Va. Code Title 19.2, Ch. 23.2 · one record at a time</div>
   <h1>Virginia Record Sealing Flow</h1>
-  <p class="lede">The decision tree a guided web form follows to classify one record from a person's court file, plus the inputs it collects and the report it returns. Built from §§ 19.2-392.5 through 19.2-392.17 as published October 2026.</p>
+  <p class="lede">The decision tree a guided web form follows to classify one record from a person's court file, plus the inputs it collects and the report it returns. Built from §§ 19.2-392.5 through 19.2-392.17 as published October 2026, and revised October 30, 2026 against Virginia State Crime Commission and Virginia Indigent Defense Commission materials (see “What changed” below).</p>
 </header>
 
 <section>
@@ -81,7 +81,7 @@ flowchart TD
   Q1 -- No --> Q2{"Q2. What kind of record?"}
   Q2 -- "Traffic infraction (not a crime)" --> FA[["Flow A: Traffic infraction"]]
   Q2 -- "Ancillary matter" --> FB[["Flow B: Ancillary matter"]]
-  Q2 -- "Criminal charge" --> Q3{"Q3. Possession of marijuana&lt;br/&gt;under former § 18.2-250.1?"}
+  Q2 -- "Criminal charge" --> Q3{"Q3. Charged as, or ended as, possession&lt;br/&gt;of marijuana under former § 18.2-250.1?"}
   Q3 -- Yes --> AR0["AUTOMATIC · NOW&lt;br/&gt;Sealed by law, any offense date&lt;br/&gt;§ 19.2-392.6:1"]
   Q3 -- No --> Q4{"Q4. Final disposition?"}
   Q4 -- Pending --> PEND["NOT YET DETERMINABLE&lt;br/&gt;Re-run after final disposition"]
@@ -142,27 +142,33 @@ flowchart TD
   <h2>Flow C: Acquittals and dismissals</h2>
   <div class="frame"><pre class="mermaid">
 flowchart TD
-  C1{"C1. Misdemeanor or felony?"}
-  C1 -- Felony --> C2{"C2. Acquitted or dismissed with prejudice,&lt;br/&gt;AND you asked the judge to seal at the hearing,&lt;br/&gt;AND the prosecutor agreed?"}
-  C2 -- Yes --> ARc1["AUTOMATIC · NOW&lt;br/&gt;§ 19.2-392.8(B)"]
-  C2 -- No --> NEc1["NOT ELIGIBLE for sealing&lt;br/&gt;Consider expungement, § 19.2-392.2"]
-  C1 -- Misdemeanor --> C3{"C3. Acquitted or dismissed with prejudice,&lt;br/&gt;and the order shows the court sealed it&lt;br/&gt;at disposition?"}
-  C3 -- Yes --> ARc2["AUTOMATIC · NOW&lt;br/&gt;§ 19.2-392.8(A)"]
-  C3 -- "No (older case, nolle prosequi, or you objected)" --> C4{"C4. Offense date on or after&lt;br/&gt;Jan 1, 1986?"}
-  C4 -- No --> NEc2["NOT ELIGIBLE for sealing&lt;br/&gt;Consider expungement, § 19.2-392.2"]
-  C4 -- Yes --> C5{"C5. Any unsealed conviction for a&lt;br/&gt;Virginia offense on your record?&lt;br/&gt;(traffic infractions don't count)"}
-  C5 -- Yes --> NEc3["NOT ELIGIBLE NOW&lt;br/&gt;Re-check if those convictions are sealed"]
-  C5 -- No --> C6{"C6. Any arrest or charge for a Virginia&lt;br/&gt;offense in the past 3 years?&lt;br/&gt;(traffic infractions don't count)"}
-  C6 -- Yes --> ATc["AUTOMATIC · LATER&lt;br/&gt;Latest arrest or charge + 3 years,&lt;br/&gt;at the next annual review"]
-  C6 -- No --> ARc3["AUTOMATIC · NOW&lt;br/&gt;At the next annual review&lt;br/&gt;§ 19.2-392.11"]
+  C1{"C1. Misdemeanor or felony?"} --> C0["C0. Offense date and&lt;br/&gt;final disposition date"]
+  C0 --> C2{"C2. Acquittal or dismissal with prejudice&lt;br/&gt;that ended on or after July 1, 2026?"}
+  C2 -- "Yes, felony" --> C3{"C3. Asked the judge to seal at the hearing,&lt;br/&gt;AND the prosecutor agreed?"}
+  C3 -- Yes --> ARc1["AUTOMATIC · NOW&lt;br/&gt;§ 19.2-392.8(B)"]
+  C3 -- No --> NEc1["NOT ELIGIBLE for sealing&lt;br/&gt;Expungement, § 19.2-392.2"]
+  C2 -- "No, felony" --> NEc1
+  C2 -- "Yes, misdemeanor" --> C4{"C4. Did the person object&lt;br/&gt;to sealing?"}
+  C4 -- No --> ARc2["AUTOMATIC · NOW&lt;br/&gt;§ 19.2-392.8(A)"]
+  C4 -- Yes --> C5
+  C2 -- "No, misdemeanor (older case, nolle prosequi, other dismissal)" --> C5{"C5. Offense date on or after&lt;br/&gt;Jan 1, 1986?"}
+  C5 -- No --> NEc2["NOT ELIGIBLE for sealing&lt;br/&gt;Expungement, § 19.2-392.2"]
+  C5 -- Yes --> C6{"C6. Any unsealed Virginia conviction&lt;br/&gt;reportable to the CCRE?"}
+  C6 -- Yes --> NEc3["NOT ELIGIBLE NOW&lt;br/&gt;Re-check once those convictions are sealed"]
+  C6 -- No --> C7["C7. Eligible date = later of&lt;br/&gt;disposition + 3 yrs and&lt;br/&gt;latest reportable arrest or charge + 3 yrs"]
+  C7 --> C8{"C8. Date reached?"}
+  C8 -- Yes --> ARc3["AUTOMATIC · NOW&lt;br/&gt;Next annual review · § 19.2-392.11"]
+  C8 -- No --> ATc["AUTOMATIC · LATER&lt;br/&gt;On the eligible date, at the next annual review"]
   classDef ar fill:#dcefe3,stroke:#2f7d4f,color:#0f2a1a,stroke-width:2px
   classDef at fill:#dbeaf3,stroke:#2a6f97,color:#0d2a3b,stroke-width:2px
   classDef ne fill:#f6dede,stroke:#b23a3a,color:#3a0f0f,stroke-width:2px
+  classDef calc fill:#eef0f3,stroke:#566275,color:#1b2330
   class ARc1,ARc2,ARc3 ar
   class ATc at
   class NEc1,NEc2,NEc3 ne
+  class C0,C7 calc
 </pre></div>
-  <p class="note">The title of § 19.2-392.11 mentions "no convictions or deferred and dismissed offenses," but its text bars only convictions. The form should ask about both and flag the result as uncertain if the only issue is an unsealed deferred dismissal.</p>
+  <p class="note">§ 19.2-392.8 applies only to cases that end on or after July 1, 2026. Felony non-convictions from before then have no sealing process. Every non-conviction outcome also tells the user about expungement, which the Virginia Indigent Defense Commission recommends because it gives more privacy than sealing. The title of § 19.2-392.11 mentions deferred dismissals, but its text bars only convictions, so the form flags that case as uncertain.</p>
 </section>
 
 <section>
@@ -212,9 +218,8 @@ flowchart TD
   E3 -- Yes --> NEe4["NOT ELIGIBLE&lt;br/&gt;Lifetime limit reached"]
   E3 -- No --> E4{"E4. Ever convicted of a Class 1 or 2&lt;br/&gt;or life-sentence felony?"}
   E4 -- Yes --> NEe5["NOT ELIGIBLE"]
-  E4 -- No --> E5{"E5. Any conviction (traffic infractions&lt;br/&gt;don't count) during the 7- or 10-year&lt;br/&gt;clean period after the start date?"}
-  E5 -- Yes --> NEe6["NOT ELIGIBLE&lt;br/&gt;Literal reading; confirm with an attorney"]
-  E5 -- No --> E6["E6. Compute eligibility date (see formulas)"]
+  E4 -- No --> E5["E5. Date of most recent reportable conviction&lt;br/&gt;after the start date (blank if none)"]
+  E5 --> E6["E6. Compute eligibility date (see formulas).&lt;br/&gt;A newer conviction restarts the 7 / 10 years"]
   E6 --> E7{"E7. Date reached AND&lt;br/&gt;restitution paid in full?"}
   E7 -- Yes --> PRe["PETITION · NOW · § 19.2-392.12&lt;br/&gt;Judge must also find manifest injustice&lt;br/&gt;and, if substance-related, rehabilitation"]
   E7 -- No --> PTe["PETITION · LATER&lt;br/&gt;On the eligibility date,&lt;br/&gt;once restitution is paid"]
@@ -224,8 +229,8 @@ flowchart TD
   classDef calc fill:#eef0f3,stroke:#566275,color:#1b2330
   class PRe pr
   class PTe pt
-  class NEe1,NEe2,NEe3,NEe4,NEe5,NEe6 ne
-  class E6 calc
+  class NEe1,NEe2,NEe3,NEe4,NEe5 ne
+  class E5,E6 calc
 </pre></div>
 </section>
 
@@ -235,13 +240,13 @@ flowchart TD
     <thead><tr><th>Rule</th><th>Eligibility date</th><th>Clean-record condition</th><th>Source</th></tr></thead>
     <tbody>
       <tr><td>Traffic</td><td>Final disposition + 11 years</td><td>None</td><td>§ 19.2-392.17</td></tr>
-      <tr><td>Annual sweep</td><td>Latest Virginia arrest or charge + 3 years (next annual review)</td><td>No unsealed Virginia conviction, ever</td><td>§ 19.2-392.11</td></tr>
+      <tr><td>Annual sweep</td><td>Later of final disposition + 3 years and latest reportable Virginia arrest or charge + 3 years (next annual review)</td><td>No unsealed reportable Virginia conviction, ever</td><td>§ 19.2-392.11</td></tr>
       <tr><td>Monthly sweep</td><td>Conviction date + 7 years (next monthly review)</td><td>No reportable conviction anywhere in those 7 years</td><td>§ 19.2-392.6(B)</td></tr>
       <tr><td>Minor-offense petition</td><td>Conviction or dismissal date + 7 years</td><td>Same as monthly sweep</td><td>§ 19.2-392.12:1(I)</td></tr>
-      <tr><td>General petition</td><td>Latest of: <b>S</b> + 7 years (misdemeanor) or + 10 years (felony); last Class 3–4 felony conviction + 20 years; last other felony conviction + 10 years</td><td>No reportable conviction anywhere from S through S + 7/10 years</td><td>§ 19.2-392.12(F)(1)–(2)</td></tr>
+      <tr><td>General petition</td><td>Latest of: <b>S</b> + 7 years (misdemeanor) or + 10 years (felony); most recent reportable conviction after S + 7 / 10 years; last Class 3–4 felony conviction + 20 years; last other felony conviction + 10 years</td><td>A full 7 / 10 years with no reportable conviction; a new conviction restarts the clock (VIDC reading)</td><td>§ 19.2-392.12(F)(1)–(2)</td></tr>
     </tbody>
   </table></div>
-  <p class="note"><b>S</b> is the latest of: conviction or dismissal of the deferred charge; release from incarceration on this case; a finding of a probation, parole or suspended-sentence violation on this case; release after that violation. "Reportable" means an offense reportable to the Central Criminal Records Exchange under § 19.2-390(A), in Virginia, another state, D.C., or federal or territorial courts.</p>
+  <p class="note"><b>S</b> is the latest of: conviction or dismissal of the deferred charge; release from incarceration on this case; a finding of a probation, parole or suspended-sentence violation on this case; release after that violation. "Reportable" means reportable to the Central Criminal Records Exchange under § 19.2-390(A): mainly felonies and jailable misdemeanors. Fine-only Class 3 and 4 misdemeanors are not reported, and most Title 46.2 offenses such as reckless driving are not either, so they do not restart or block a waiting period. Convictions in another state, D.C., or federal or territorial courts count unless they are traffic infractions. Nothing could be sealed before July 1, 2026, so the form shows "eligible since" as July 1, 2026 for older records.</p>
 </section>
 
 <section>
@@ -253,8 +258,8 @@ flowchart TD
         <li><code>4.1-305</code> underage alcohol *</li>
         <li><code>18.2-96</code> petit larceny, misdemeanor only</li>
         <li><code>18.2-103</code> concealment / shoplifting, misdemeanor only</li>
-        <li><code>18.2-119</code>, <code>18.2-120</code>, <code>18.2-134</code> trespass</li>
-        <li><code>18.2-248.1</code> marijuana distribution, misdemeanor only</li>
+        <li><code>18.2-119</code> trespass, <code>18.2-120</code> instigating trespass, <code>18.2-134</code> trespass on posted property</li>
+        <li><code>18.2-248.1(a)(1)</code> marijuana distribution, misdemeanor only</li>
         <li><code>18.2-265.3(A)</code> selling drug paraphernalia *</li>
         <li><code>18.2-415</code> disorderly conduct</li>
       </ul>
@@ -294,17 +299,17 @@ flowchart TD
     <tbody>
       <tr><td>Q1</td><td>Was this a juvenile case that stayed in juvenile court?</td><td>Yes / No</td><td>Court name on the case</td></tr>
       <tr><td>Q2</td><td>What kind of record is this?</td><td>Traffic infraction / Ancillary / Criminal charge</td><td>Charge type, case type</td></tr>
-      <tr><td>Q3</td><td>Is the charge possession of marijuana, former § 18.2-250.1?</td><td>Yes / No</td><td>Code section on charge</td></tr>
+      <tr><td>Q3</td><td>Was the case charged as, or did it end as, possession of marijuana under former § 18.2-250.1? (Not § 4.1-1100.)</td><td>Yes / No</td><td>Code section on charge</td></tr>
       <tr><td>Q4</td><td>What was the final disposition?</td><td>Pending / Acquittal / Nolle prosequi / Dismissed with or without prejudice / Deferred and dismissed / Convicted</td><td>Disposition line, final order</td></tr>
-      <tr><td>A1–A2, C4, D1</td><td>Offense date; final disposition date</td><td>Dates (computed checks)</td><td>Warrant, summons, final order</td></tr>
+      <tr><td>A1, C0, D1</td><td>Offense date; final disposition date</td><td>Dates (computed checks)</td><td>Warrant, summons, final order</td></tr>
       <tr><td>B1</td><td>Is the related main charge sealed, and by what route?</td><td>Choice</td><td>Sealing order or notice on main case</td></tr>
       <tr><td>C1, E1</td><td>Offense level and class</td><td>Misdemeanor / Felony class 1–6 / Unclassified</td><td>Charge class on warrant or order</td></tr>
-      <tr><td>C2, C3</td><td>Did the court order sealing at disposition? For felonies, did you request it and did the prosecutor agree?</td><td>Yes / No</td><td>Disposition order</td></tr>
+      <tr><td>C3, C4</td><td>For cases ending on or after July 1, 2026: felonies, did you request sealing and did the prosecutor agree? Misdemeanors, did you object?</td><td>Yes / No</td><td>Disposition order</td></tr>
       <tr><td>C5</td><td>List every other conviction and deferred dismissal, with dates and whether sealed</td><td>Repeating rows</td><td>Full criminal history</td></tr>
-      <tr><td>C6</td><td>Date of your most recent arrest or charge (not traffic infractions)</td><td>Date</td><td>Full criminal history</td></tr>
+      <tr><td>C7</td><td>Date of your most recent reportable arrest or charge, including this case</td><td>Date</td><td>Full criminal history</td></tr>
       <tr><td>D2, D5</td><td>Code section of the offense</td><td>Section picker</td><td>Charge</td></tr>
       <tr><td>D3</td><td>Other charges finalized the same day, with code sections and results</td><td>Repeating rows (computed)</td><td>Same-day case dispositions</td></tr>
-      <tr><td>D4, E5</td><td>New convictions after this one</td><td>Computed from C5 rows</td><td>Full criminal history</td></tr>
+      <tr><td>D4, E5</td><td>New reportable convictions after this one, and the most recent one's date</td><td>Yes / No, then date</td><td>Full criminal history</td></tr>
       <tr><td>E2</td><td>Excluded-offense checks: section, firearm use, family or household victim, animal ban, dog ownership, gun-rights restoration</td><td>Section picker plus Yes / No</td><td>Charge, order, sentencing terms</td></tr>
       <tr><td>E3</td><td>How many § 19.2-392.12 petitions have been granted for you?</td><td>0 / 1 / 2</td><td>Prior sealing orders</td></tr>
       <tr><td>E6</td><td>Release dates; probation or parole violation findings on this case</td><td>Dates</td><td>Sentencing order, DOC records, show-cause orders</td></tr>
@@ -320,7 +325,7 @@ flowchart TD
     <div class="card rep" style="--c:var(--ar)">
       <h3>Automatic · now</h3>
       <dl><dt>Says</dt><dd>This record is sealed by law, or will be at the next monthly or annual State Police review.</dd>
-      <dt>Next step</dt><dd>None. If it still shows up later, a free petition under § 19.2-392.12:1 is available for minor-offense records.</dd></dl>
+      <dt>Next step</dt><dd>None. People aren't notified, so the report explains how to check (OCIS, the clerk, or a State Police record, which marks sealed offenses), and that automatic sealing only works if the offense reached the CCRE. If it doesn't seal, a free petition under § 19.2-392.12:1 is the backup. Non-conviction results also mention expungement.</dd></dl>
     </div>
     <div class="card rep" style="--c:var(--at)">
       <h3>Automatic · later</h3>
@@ -330,12 +335,12 @@ flowchart TD
     <div class="card rep" style="--c:var(--pr)">
       <h3>Petition · now</h3>
       <dl><dt>Says</dt><dd>You can file today in the circuit court where the case ended. No filing fee.</dd>
-      <dt>Lists</dt><dd>Petition contents, serving the prosecutor (30-day response window), and requesting your record from the Central Criminal Records Exchange. For § 19.2-392.12: manifest-injustice showing, rehabilitation if substance-related, and that it uses one of two lifetime grants.</dd></dl>
+      <dt>Lists</dt><dd>The right forms (CC-1201 and CC-1201(A) for the general petition; CC-1203 and its addenda for the automatic petition; cover sheet CC-1416), copies of the charging documents, filing with the circuit court civil division, serving the prosecutor (30 days), and requesting the criminal history with State Police form SP-356 (2–4 weeks). For § 19.2-392.12: manifest-injustice showing, rehabilitation if substance-related, and that it uses one of two lifetime grants.</dd></dl>
     </div>
     <div class="card rep" style="--c:var(--pt)">
       <h3>Petition · later</h3>
       <dl><dt>Says</dt><dd>You can file on or after [date], once [restitution is paid].</dd>
-      <dt>Shows</dt><dd>Which input set the date (clean period, felony lookback, or restitution) so the user can see what to wait for.</dd></dl>
+      <dt>Shows</dt><dd>Which input set the date (clean period, a newer conviction, felony lookback, or restitution) so the user can see what to wait for. A newer conviction adds a note that this follows the VIDC reading.</dd></dl>
     </div>
     <div class="card rep" style="--c:var(--ne)">
       <h3>Not eligible</h3>
@@ -344,13 +349,31 @@ flowchart TD
     </div>
     <div class="card rep" style="--c:var(--pend)">
       <h3>Every report ends with</h3>
-      <dl><dt>Effects</dt><dd>You may deny a sealed record to most employers and agencies, except police jobs, jobs where state or federal law requires asking, and security clearances. Courts may still use it at sentencing, bail and custody hearings. Sealing doesn't restore gun or civil rights, or cancel fines and restitution (§ 19.2-392.5).</dd>
+      <dl><dt>Effects</dt><dd>You may deny a sealed record to most Virginia employers and agencies, except police jobs, jobs where law requires asking, security clearances, jury service and custody cases. Federal (FBI) records aren't affected, and federal firearm, housing and barrier-crime rules still apply. Courts may still use it at sentencing and bail. Background check companies must delete it. Sealing isn't a pardon and doesn't restore gun or civil rights, or cancel fines and restitution (§ 19.2-392.5).</dd>
+      <dt>Help</dt><dd>Virginia Lawyer Referral Service (free 30-minute consult, (800) 552-7977), Virginia Free Legal Answers, statewide legal aid (866) 534-5243, and VIDC's guides and forms.</dd>
       <dt>Disclaimer</dt><dd>Not legal advice; confirm with legal aid or an attorney.</dd></dl>
     </div>
   </div>
 </section>
 
-<p class="cap">Source: Code of Virginia §§ 19.2-392.5, -392.6, -392.6:1, -392.7, -392.8, -392.10, -392.11, -392.12, -392.12:1, -392.17, as shown on law.lis.virginia.gov on October 27, 2026. Sections taking effect July 1, 2027 rename § 18.2-248.1 as a "former" section without changing these conditions.</p>
+<section>
+  <h2>What changed after reviewing VSCC and VIDC materials</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>Area</th><th>Before</th><th>Now</th><th>Source</th></tr></thead>
+    <tbody>
+      <tr><td>Effective date</td><td>Not modeled</td><td>Nothing seals before July 1, 2026; older eligible records show July 1, 2026 as the earliest date</td><td>VSCC table n.1; brochure</td></tr>
+      <tr><td>Sealing at case end</td><td>Applied to any acquittal or dismissal with prejudice</td><td>Only cases ending on or after July 1, 2026. Older misdemeanors go to the annual sweep; older felonies have no sealing process</td><td>VSCC table; VIDC slide 11</td></tr>
+      <tr><td>Annual sweep timing</td><td>3 years from the latest arrest</td><td>Also 3 years from the final disposition, whichever is later</td><td>VSCC table</td></tr>
+      <tr><td>New conviction during the general-petition wait</td><td>Treated as a permanent bar</td><td>Restarts the 7 / 10-year clock from that conviction, flagged as the VIDC reading</td><td>VIDC flowchart Pt. 2; slide 23</td></tr>
+      <tr><td>Which convictions count</td><td>Any non-traffic conviction</td><td>Only CCRE-reportable ones; fine-only misdemeanors and most Title 46.2 offenses don't count</td><td>VSCC report n.24; VIDC slide 22</td></tr>
+      <tr><td>Marijuana possession</td><td>Charge or conviction under former § 18.2-250.1</td><td>Also cases that started as possession and ended differently; not § 4.1-1100</td><td>VSCC report, p. 58–59</td></tr>
+      <tr><td>Sealed convictions</td><td>Not addressed for the general petition</td><td>Still count for § 19.2-392.12 felony lookbacks (only § 19.2-392.11 ignores them)</td><td>VIDC slide 23</td></tr>
+      <tr><td>Report content</td><td>Generic filing steps</td><td>Form numbers, SP-356, how to check automatic sealing, CCRE-reporting caveat, expungement guidance, help lines</td><td>VIDC how-to guide; VSB flyer; VSCC report</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<p class="cap">Source: Code of Virginia §§ 19.2-392.5, -392.6, -392.6:1, -392.7, -392.8, -392.10, -392.11, -392.12, -392.12:1, -392.17, as shown on law.lis.virginia.gov on October 27, 2026; Virginia State Crime Commission, <i>Criminal Record Sealing Processes in Virginia</i>, <i>Petition Sealing – Ineligible and Excluded Offenses</i>, sealing brochure, and 2024 Annual Report sealing update (rev. 9/23/25); Virginia Indigent Defense Commission sealing and expungement flowcharts, cheat sheet, training slides, FAQ and how-to guides; Virginia State Bar legal help flyer. Sections taking effect July 1, 2027 rename § 18.2-248.1 as a "former" section without changing these conditions.</p>
 </div>
 
 <!--claude-mermaid-runtime-begin:3477-->
