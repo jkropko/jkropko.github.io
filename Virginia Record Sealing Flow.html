@@ -376,6 +376,25 @@ flowchart TD
 <p class="cap">Source: Code of Virginia §§ 19.2-392.5, -392.6, -392.6:1, -392.7, -392.8, -392.10, -392.11, -392.12, -392.12:1, -392.17, as shown on law.lis.virginia.gov on October 27, 2026; Virginia State Crime Commission, <i>Criminal Record Sealing Processes in Virginia</i>, <i>Petition Sealing – Ineligible and Excluded Offenses</i>, sealing brochure, and 2024 Annual Report sealing update (rev. 9/23/25); Virginia Indigent Defense Commission sealing and expungement flowcharts, cheat sheet, training slides, FAQ and how-to guides; Virginia State Bar legal help flyer. Sections taking effect July 1, 2027 rename § 18.2-248.1 as a "former" section without changing these conditions.</p>
 </div>
 
+<script type="module">
+// Render the flowcharts anywhere the page is hosted (for example GitHub Pages).
+// The claude.ai viewer draws Mermaid itself; this only runs for diagrams still showing as text.
+const pending = () => [...document.querySelectorAll('pre.mermaid')]
+  .filter(p => !p.querySelector('svg') && p.getAttribute('data-processed') !== 'true');
+async function renderDiagrams() {
+  if (!pending().length) return;
+  try {
+    const { default: mermaid } = await import('https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.esm.min.mjs');
+    mermaid.initialize({ startOnLoad: false, theme: 'default', securityLevel: 'strict', flowchart: { htmlLabels: true, useMaxWidth: true } });
+    await mermaid.run({ nodes: pending() });
+  } catch (e) {
+    console.warn('Flowcharts could not be drawn; showing their text instead.', e);
+  }
+}
+const start = () => setTimeout(renderDiagrams, 600);
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+</script>
+
 <!--claude-mermaid-runtime-begin:3477-->
 <style>.mermaid-diagram{margin-block:4px}.mermaid-diagram svg{display:block;margin:0 auto;max-width:100%;height:auto}</style>
 <script src="/_runtime/mermaid-11.16.1.min.js"></script>
